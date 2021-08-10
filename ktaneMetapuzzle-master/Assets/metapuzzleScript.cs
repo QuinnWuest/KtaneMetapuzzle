@@ -1118,8 +1118,8 @@ public class metapuzzleScript : MonoBehaviour {
     // Nonogram stuff
     void Toggle()
     {
-        if (filling) { filling = false; fillText.text = "Mark"; }
-        else { filling = true; fillText.text = "Fill"; }
+        if (filling) { filling = false; fillText.text = "Mark Mode"; }
+        else { filling = true; fillText.text = "Fill Mode"; }
     }
     void CheckNonogram()
     {
