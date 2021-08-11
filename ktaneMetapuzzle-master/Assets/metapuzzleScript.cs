@@ -199,6 +199,7 @@ public class metapuzzleScript : MonoBehaviour {
     static readonly string[] colorNames = { "red", "yellow", "green", "blue" };
     bool[] pressedSTDBtns = { false, false, false };
     string[] progressStrings = { "", "✓  ", "✓✓ ", "✓✓✓" };
+    bool stdTimerStarted = false;
 
     // Submission variables
     string submittedAnswer = "";
@@ -312,7 +313,7 @@ public class metapuzzleScript : MonoBehaviour {
         {
             DebugMsg("Attempting to generate a meta...");
             metaAnswer = SevenLetterWords.List.PickRandom();
-            while ((sortingMethod == 0 && extractionMethod == 4 && badFirstLetters.Contains(metaAnswer[0])) || (sortingMethod == 1 && extractionMethod == 5 && badLastLetters.Contains(metaAnswer[0])) || (sortingMethod == 2 && extractionMethod == 4 && badFirstLetters.Contains(metaAnswer[6])) || (sortingMethod == 3 && extractionMethod == 5 && badLastLetters.Contains(metaAnswer[6])))
+            while ((sortingMethod == 0 && extractionMethod == 4 && badFirstLetters.Contains(metaAnswer[0])) || (sortingMethod == 1 && extractionMethod == 5 && badLastLetters.Contains(metaAnswer[0])) || (sortingMethod == 2 && extractionMethod == 4 && badFirstLetters.Contains(metaAnswer[6])) || (sortingMethod == 3 && extractionMethod == 5 && badLastLetters.Contains(metaAnswer[6])) || !MainWordList.List.Contains(metaAnswer))
                 metaAnswer = SevenLetterWords.List.PickRandom();
             metaSuccessful = true;
 
@@ -501,7 +502,7 @@ public class metapuzzleScript : MonoBehaviour {
             DebugMsg(feederAnswers[i]);
 
         // Encoding quiz generation
-        while (encodedWord.Length != 5)
+        while (encodedWord.Length != 5 || !MainWordList.List.Contains(encodedWord))
             encodedWord = FiveLetterWords.List.PickRandom();
         encodingMethod = Random.Range(0, 3);
 
@@ -879,8 +880,6 @@ public class metapuzzleScript : MonoBehaviour {
                     break;
             }
         }
-
-        StartCoroutine(SpotTheDifferenceTimer());
     }
 
     // Generic stuff
@@ -926,6 +925,11 @@ public class metapuzzleScript : MonoBehaviour {
                     break;
                 case 6:
                     spotTheDifference.SetActive(true);
+                    if (!stdTimerStarted)
+                    {
+                        StartCoroutine(SpotTheDifferenceTimer());
+                        stdTimerStarted = true;
+                    }
                     break;
             }
         }
@@ -1283,7 +1287,6 @@ public class metapuzzleScript : MonoBehaviour {
         int secondsRemaining = 30;
         while (!solvedPuzzles[Array.IndexOf(puzzleOrder, 6)])
         {
-
             if (secondsRemaining <= 0)
             {
                 DebugMsg("Resetting Spot the Difference...");
