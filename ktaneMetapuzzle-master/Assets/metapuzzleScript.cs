@@ -116,7 +116,7 @@ public class metapuzzleScript : MonoBehaviour {
     static readonly string[] encodingNames = { "Morse code", "Braille", "flag semaphore" };
     static readonly string[] morseAlphabet = { ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.." };
     static readonly string[] brailleAlphabet = { ".-----", "..----", ".--.--", ".--..-", ".---.-", "..-.--", "..-..-", "..--.-", "-.-.--", "-.-..-", ".-.---", "...---", ".-..--", ".-...-", ".-.-.-", "....--", ".....-", "...-.-", "-...--", "-....-", ".-.--.", "...--.", "-.-...", ".-..-.", ".-....", ".-.-.." };
-    static readonly int[] semaphoreAlphabet = { 4, 5, 4, 6, 4, 7, 4, 0, 4, 1, 4, 2, 4, 3, 5, 6, 5, 7, 0, 2, 5, 0, 5, 1, 5, 2, 5, 3, 6, 7, 6, 0, 6, 1, 6, 2, 6, 3, 7, 0, 7, 1, 7, 2, 1, 2, 1, 3, 7, 2, 2, 3 };
+    static readonly int[] semaphoreAlphabet = { 4, 5, 4, 6, 4, 7, 4, 0, 4, 1, 4, 2, 4, 3, 5, 6, 5, 7, 0, 2, 5, 0, 5, 1, 5, 2, 5, 3, 6, 7, 6, 0, 6, 1, 6, 2, 6, 3, 7, 0, 7, 1, 0, 3, 1, 2, 1, 3, 7, 2, 2, 3 };
 
     int[] passwordIndices = { 0, 0, 0, 0, 0 };
 
@@ -211,9 +211,10 @@ public class metapuzzleScript : MonoBehaviour {
     {
         _moduleId = _moduleIdCounter++;
         // Answer button selectables
-        leftSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); CycleAnswer(-1); return false; };
-        rightSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);  CycleAnswer(1); return false; };
-        answerSelectable.OnInteract += delegate () { if (!solved) { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Module.transform);  ToggleSubmission(); } return false; };
+        leftSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); CycleAnswer(-1); return false; };
+        rightSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);  CycleAnswer(1); return false; };
+        answerSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Module.transform); if (!solved) {  ToggleSubmission(); } return false; };
+        
         // Encoding quiz selectables
         for (int i = 0; i < 5; i++)
         {
