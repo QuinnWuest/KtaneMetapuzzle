@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -8,9 +8,154 @@
     <link rel="stylesheet" type="text/css" href="css/normalize.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <script src="js/ktane-utils.js"></script>
+	<script>
+		/*
+		function setDefaultRules()
+		{
+		
+		}
+
+		function setRules(rnd)
+		{
+			var ruleseedSuccessful = false;
+			var uh = [ 0, 1, 4, 2, 3, 5 ];
+			var sortRuleOrder = [ 0, 1, 2, 3, 4, 5, 6, 7 ];
+			var extractRuleOrder = [ 0, 1, 2, 3, 4, 5, 6, 7 ];
+			var sortNames = [ "Sort by first letters in alphabetical order. *", "Sort by last letters in alphabetical order. **", "Sort by first letters in reverse alphabetical order. *", "Sort by last letters in reverse alphabetical order. **", "Sort the answers in the order they were given. *** †", "Sort the answers in the reverse of the order they were given. *** †", "Sort the answers in ascending order by length.", "Sort the answers in descending order by length." ];
+			var extractionNames = [ "Extract the first letter. *", "Extract the letter that appears twice in a row.", "Extract the letter that appears three times.", "Extract the last letter. **", "After sorting, take the first letter of the first answer, the second letter of the second letter, etc. ***", "After sorting, take the last letter of the first answer, the second-last letter of the second letter, etc. ***", "There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter in the center of this pattern (the B, in this case).", "There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter on the outside of this pattern (the A, in this case)." ];
+			var inversionMethod = 0;
+			while (!ruleseedSuccessful)
+			{
+				rnd.shuffleFisherYates(sortRuleOrder);
+				rnd.shuffleFisherYates(extractRuleOrder);
+				inversionMethod = rnd.nextMax(6);
+
+				ruleseedSuccessful = true;
+
+				switch (inversionMethod)
+				{
+					case 0:
+						for (var i = 0; i < 3; i++)
+							if ((sortRuleOrder.indexOf(uh[i]) + 4) % 8 == sortRuleOrder.indexOf(uh[i + 3]))
+								ruleseedSuccessful = false;
+						break;
+                    case 1:
+                        for (var i = 0; i < 3; i++)
+                            if ((sortRuleOrder.indexOf(uh[i]) + 2) % 4 + sortRuleOrder.indexOf(uh[i]) / 4 * 4 == sortRuleOrder.indexOf(uh[i + 3]))
+                                ruleseedSuccessful = false;
+                        break;
+                    case 2:
+                        for (var i = 0; i < 3; i++)
+                            if ((sortRuleOrder.indexOf(uh[i]) + 1) % 2 + sortRuleOrder.indexOf(uh[i]) / 2 * 2 == sortRuleOrder.indexOf(uh[i + 3]))
+                                ruleseedSuccessful = false;
+                        break;
+                    case 3:
+                        if ((extractRuleOrder.indexOf(uh[i]) + 4) % 8 == extractRuleOrder.indexOf(uh[i + 3]))
+                            ruleseedSuccessful = false;
+                        break;
+                    case 4:
+                        if ((extractRuleOrder.indexOf(uh[i]) + 2) % 4 + extractRuleOrder.indexOf(uh[i]) / 4 * 4 == extractRuleOrder.indexOf(uh[i + 3]))
+                            ruleseedSuccessful = false;
+                        break;
+                    case 5:
+                        if ((extractRuleOrder.indexOf(uh[i]) + 2) % 4 + extractRuleOrder.indexOf(uh[i]) / 4 * 4 == extractRuleOrder.indexOf(uh[i + 3]))
+                            ruleseedSuccessful = false;
+                        break;
+				}
+			}
+
+			console.log(sortRuleOrder[0] + " " + sortRuleOrder[1] + " " + sortRuleOrder[2] + " " + sortRuleOrder[3] + " " + sortRuleOrder[4] + " " + sortRuleOrder[5] + " " + sortRuleOrder[6] + " " + sortRuleOrder[7]);
+			
+			for (var i = 1; i < 9; i++)
+			{
+				document.getElementById("sort-"+i).innerText = sortNames[sortRuleOrder[i-1]];
+				document.getElementById("extraction-"+i).innerText = extractionNames[extractRuleOrder[i-1]];
+			}
+
+			var inversionRuleNames = [ "the first digit of the sorting method", "the second digit of the sorting method", "the last digit of the sorting method", "the first digit of the extraction method", "the second digit of the extraction method", "the last digit of the extraction method" ];
+			document.getElementById("inversionRule").innerText = inversionRuleNames[inversionMethod];
+
+			var ruleNumbers = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 ];
+			var rules = [ "First character of the serial number is a letter",
+				"Second character of the serial number is a letter",
+				"Third character of the serial number is even",
+				"Fourth character of the serial number is in the first half of the alphabet",
+				"Fifth character of the serial number is in the first half of the alphabet",
+				"Sixth character of the serial number is even",
+				"Serial number contains a vowel (AEIOU)",
+				"Number of batteries is even",
+				"Number of battery holders is even",
+				"At least 3 batteries present",
+				"At least 2 battery holders present",
+				"At least 2 AA batteries present",
+				"At least 2 D batteries present",
+				"Number of indicators is even",
+				"At least 2 indicators present",
+				"BOB, CAR, MSA, or SND indicators present",
+				"CLR, FRK, IND, or SIG indicators present",
+				"FRQ, NSA, TRN, or NLL indicators present",
+				"Number of lit indicators is greater than or equal to the number of unlit indicators",
+				"Any lit indicators present",
+				"Any unlit indicators present",
+				"Number of ports is even",
+				"Number of port plates is even",
+				"Serial port present",
+				"Parallel port present",
+				"RJ-45 port present",
+				"Stereo RCA port present",
+				"DVI-D port present",
+				"PS/2 port present",
+				"Empty port plate present"];
+			var invertedRules = [ "First character of the serial number is a digit",
+				"Second character of the serial number is a digit",
+				"Third character of the serial number is odd",
+				"Fourth character of the serial number is in the last half of the alphabet",
+				"Fifth character of the serial number is in the last half of the alphabet",
+				"Sixth character of the serial number is odd",
+				"Serial number does not contain a vowel (AEIOU)",
+				"Number of batteries is odd",
+				"Number of battery holders is odd",
+				"Less than 3 batteries present",
+				"Less than 2 battery holders present",
+				"Less than 2 AA batteries present",
+				"Less than 2 D batteries present",
+				"Number of indicators is odd",
+				"Less than 2 indicators present",
+				"BOB, CAR, MSA, or SND indicators not present",
+				"CLR, FRK, IND or SIG indicators not present",
+				"FRQ, NSA, TRN or NLL indicators not present",
+				"Number of lit indicators is less than the number of unlit indicators",
+				"No lit indicators present",
+				"No unlit indicators present",
+				"Number of ports is odd",
+				"Number of port plates is odd",
+				"Serial port not present",
+				"Parallel port not present",
+				"RJ-45 port not present",
+				"Stereo RCA port not present",
+				"DVI-D port not present",
+				"PS/2 port not present",
+				"Empty port plate not present"];
+			var currentlyInvertedRules = [ false, false, false, false, false, false ];
+			rnd.shuffleFisherYates(ruleNumbers);
+			for (var i = 1; i < 7; i++)
+			{
+				if (rnd.nextMax(2) == 0)
+					document.getElementById("condition-"+i).innerText = invertedRules[ruleNumbers[i-1]];
+				else
+					document.getElementById("condition-"+i).innerText = rules[ruleNumbers[i-1]];
+			}
+
+			
+		}
+		*/
+	</script>
     <style>
         table {
             margin: 1em auto;
+        }
+        .page {
+            overflow: hidden;
         }
     </style>
 </head>
@@ -26,7 +171,7 @@
                 <h2 style="font-size: 8px; margin-top: 4px; color: #888888;">On the Subject of Metapuzzles</h2>
                 <h2 style="font-size: 4px; margin-top: 4px; color: #AAAAAA;">On the Subject of Metapuzzles</h2>
                 <h2 style="font-size: 2px; margin-top: 4px; color: #CCCCCC;">On the Subject of Metapuzzles</h2>
-                
+
                 <p>To solve the module, press the button at the top to enter submission mode and enter the answer to the metapuzzle.</p>
                 <p>Once you enter submission mode, you can exit it by pressing the button at the top again.</p>
                 <p>A metapuzzle is a puzzle that uses the answers to other puzzles. The metapuzzle on the module has seven different puzzles that feed into it. After solving any of these puzzles, the module will give you an English word for its "answer".</p>
@@ -90,7 +235,7 @@
                             <li>You will have 30 seconds to press the three cells (on either side) whose cells differ between the two tables before it resets.</li>
                         </ul></li>
                 </ul>
-                
+
             </div>
             <div class="page-footer relative-footer">Page 2 of 4</div>
         </div>
@@ -101,15 +246,15 @@
             </div>
             <div class="page-content">
                 <p>To solve the metapuzzle, you need to know two things: the extraction method and the sorting method.</p>
-                
+
                 <ul>
                     <li><b>Extraction methods</b> will tell you what letter you need to get from the answers.</li>
                     <li><b>Sorting methods</b> will tell you what order to put those letters.</li>
                 </ul>
-                
+
                 <p>The extracted letters, in the correct order, will spell out the answer to the metapuzzle.</p>
                 <p>To find the extraction method and sorting method, make a 3-digit binary number, where the true conditions are 1s and the false conditions are 0s:</p>
-                <table style="margin: auto;">
+				<table style="margin: auto;">
                     <tr>
                         <th>#</th>
                         <th style="width: 45%">Extraction</th>
@@ -117,23 +262,23 @@
                     </tr>
                     <tr>
                         <td style="text-align: center;">1st</td>
-                        <td>First character of the serial number is a letter</td>
-                        <td>Second character of the serial number is a letter</td>
+                        <td><span class="condition" id="condition-1">First character of the serial number is a letter</span></td>
+                        <td><span class="condition" id="condition-2">Second character of the serial number is a letter</span></td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">2nd</td>
-                        <td>Third character of the serial number is even</td>
-                        <td>Fourth character of the serial number is in the first half of the alphabet</td>
+                        <td><span class="condition" id="condition-3">Third character of the serial number is even</span></td>
+                        <td><span class="condition" id="condition-4">Fourth character of the serial number is in the first half of the alphabet</span></td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">3rd</td>
-                        <td>Fifth character of the serial number is in the first half of the alphabet</td>
-                        <td>Sixth character of the serial number is even</td>
+                        <td><span class="condition" id="condition-5">Fifth character of the serial number is in the first half of the alphabet</span></td>
+                        <td><span class="condition" id="condition-6">Sixth character of the serial number is even</span></td>
                     </tr>
                 </table>
                 <br>
                 <p>Then, look them up in the table below.</p>
-                <p><b>If the extraction and sorting method have the same number of asterisks next to them</b>, invert the first digit of the sorting method.</p>
+                <p><b>If the extraction and sorting method have the same number of asterisks next to them</b>, invert <span id="inversionRule">the first digit of the sorting method</span>.</p>
                 <table>
                     <tr>
                         <th>#</th>
@@ -142,23 +287,23 @@
                     </tr>
                     <tr>
                         <td style="text-align: center; width: 10%">000</td>
-                        <td>Extract the first letter. *</td>
-                        <td>Sort by first letters in alphabetical order. *</td>
+                        <td><span class="extraction" id="extraction-1">Extract the first letter. *</span></td>
+                        <td><span class="sort" id="sort-1">Sort by first letters in alphabetical order. *</span></td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">001</td>
-                        <td>Extract the letter that appears twice in a row.</td>
-                        <td>Sort by last letters in alphabetical order. **</td>
+                        <td><span class="extraction" id="extraction-2">Extract the letter that appears twice in a row.</span></td>
+                        <td><span class="sort" id="sort-2">Sort by last letters in alphabetical order. **</span></td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">010</td>
-                        <td>Extract the letter that appears three times.</td>
-                        <td>Sort by first letters in reverse alphabetical order. *</td>
+                        <td><span class="extraction" id="extraction-3">Extract the letter that appears three times.</span></td>
+                        <td><span class="sort" id="sort-3">Sort by first letters in reverse alphabetical order. *</span></td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">011</td>
-                        <td>Extract the last letter. **</td>
-                        <td>Sort by last letters in reverse alphabetical order. **</td>
+                        <td><span class="extraction" id="extraction-4">Extract the last letter. **</span></td>
+                        <td><span class="sort" id="sort-4">Sort by last letters in reverse alphabetical order. **</span></td>
                     </tr>
                 </table>
             </div>
@@ -178,23 +323,23 @@
                     </tr>
                     <tr>
                         <td style="text-align: center; width: 10%">100</td>
-                        <td>After sorting, take the first letter of the first answer, the second letter of the second letter, etc.***</td>
-                        <td>Sort the answers in the order they were given.*** †</td>
+                        <td><span class="extraction" id="extraction-5">After sorting, take the first letter of the first answer, the second letter of the second letter, etc.***</td>
+                        <td><span class="sort" id="sort-5">Sort the answers in the order they were given.*** †</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">101</td>
-                        <td>After sorting, take the last letter of the first answer, the second-last letter of the second letter, etc.***</td>
-                        <td>Sort the answers in the reverse of the order they were given.*** †</td>
+                        <td><span class="extraction" id="extraction-6">After sorting, take the last letter of the first answer, the second-last letter of the second letter, etc.***</td>
+                        <td><span class="sort" id="sort-6">Sort the answers in the reverse of the order they were given.*** †</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">110</td>
-                        <td>There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter in the center of this pattern (the B, in this case).</td>
-                        <td>Sort the answers in ascending order by length.</td>
+                        <td><span class="extraction" id="extraction-7">There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter in the center of this pattern (the B, in this case).</td>
+                        <td><span class="sort" id="sort-7">Sort the answers in ascending order by length.</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">111</td>
-                        <td>There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter on the outside of this pattern (the A, in this case).</td>
-                        <td>Sort the answers in descending order by length.</td>
+                        <td><span class="extraction" id="extraction-8">There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter on the outside of this pattern (the A, in this case).</td>
+                        <td><span class="sort" id="sort-8">Sort the answers in descending order by length.</td>
                     </tr>
                 </table>
                 <br>

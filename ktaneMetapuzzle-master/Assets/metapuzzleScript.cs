@@ -12,6 +12,7 @@ public class metapuzzleScript : MonoBehaviour {
     public KMBombModule Module;
     public KMBombInfo Info;
     public KMAudio Audio;
+    public KMRuleSeedable Ruleseed;
     // Answer button stuff
     public GameObject answerObject;
     public KMSelectable answerSelectable, leftSelectable, rightSelectable;
@@ -99,6 +100,11 @@ public class metapuzzleScript : MonoBehaviour {
     static readonly char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
     static readonly char[] badFirstLetters = "RST".ToCharArray();
     static readonly char[] badLastLetters = "DEFGHIJKLMNOPQ".ToCharArray();
+
+    // Ruleseed generation
+    int[] sortRuleOrder = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    int[] extractRuleOrder = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    int inversionMethod = 0;
 
     // For displaying things
     int shownPuzzle = 0;
@@ -272,14 +278,61 @@ public class metapuzzleScript : MonoBehaviour {
         clearSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); ClearAnswer(); return false; };
     }
 
-    private void Start()
+    void Start()
     {
-        submissionObject.SetActive(false);
-        Init();
-    }
+        // Ruleseed set-up
+        /*
+        var rnd = Ruleseed.GetRNG();
+        int[] uh = { 0, 1, 4, 2, 3, 5 };
+        bool ruleseedSuccessful = false;
 
-    void Init()
-    {
+        if (rnd.Seed != 1)
+        {
+            while (!ruleseedSuccessful)
+            {
+                rnd.ShuffleFisherYates(sortRuleOrder);
+                rnd.ShuffleFisherYates(extractRuleOrder);
+                inversionMethod = rnd.Next(6);
+
+                ruleseedSuccessful = true;
+
+                switch (inversionMethod)
+                {
+                    case 0: // invert the first digit of the sorting method
+                        for (int i = 0; i < 3; i++)
+                            if ((Array.IndexOf(sortRuleOrder, uh[i]) + 4) % 8 == Array.IndexOf(sortRuleOrder, uh[i + 3]))
+                                ruleseedSuccessful = false;
+                        break;
+                    case 1: // invert the second digit of the sorting method
+                        for (int i = 0; i < 3; i++)
+                            if ((Array.IndexOf(sortRuleOrder, uh[i]) + 2) % 4 + Array.IndexOf(sortRuleOrder, uh[i]) / 4 * 4 == Array.IndexOf(sortRuleOrder, uh[i + 3]))
+                                ruleseedSuccessful = false;
+                        break;
+                    case 2: // invert the last digit of the sorting method
+                        for (int i = 0; i < 3; i++)
+                            if ((Array.IndexOf(sortRuleOrder, uh[i]) + 1) % 2 + Array.IndexOf(sortRuleOrder, uh[i]) / 2 * 2 == Array.IndexOf(sortRuleOrder, uh[i + 3]))
+                                ruleseedSuccessful = false;
+                        break;
+                    case 3: // invert the first digit of the extraction method
+                        if ((Array.IndexOf(extractRuleOrder, 4) + 4) % 8 == Array.IndexOf(extractRuleOrder, 5))
+                            ruleseedSuccessful = false;
+                        break;
+                    case 4: // invert the second digit of the extraction method
+                        if ((Array.IndexOf(extractRuleOrder, 4) + 2) % 4 + Array.IndexOf(extractRuleOrder, 4) / 4 * 4 == Array.IndexOf(extractRuleOrder, 5))
+                            ruleseedSuccessful = false;
+                        break;
+                    case 5: // invert the last digit of the extraction method
+                        if ((Array.IndexOf(extractRuleOrder, 4) + 1) % 2 + Array.IndexOf(extractRuleOrder, 4) / 2 * 2 == Array.IndexOf(extractRuleOrder, 5))
+                            ruleseedSuccessful = false;
+                        break;
+                }
+            }
+
+            DebugMsg(sortRuleOrder[0] + " " + sortRuleOrder[1] + " " + sortRuleOrder[2] + " " + sortRuleOrder[3] + " " + sortRuleOrder[4] + " " + sortRuleOrder[5] + " " + sortRuleOrder[6] + " " + sortRuleOrder[7]);
+            DebugMsg(extractRuleOrder[0] + " " + extractRuleOrder[1] + " " + extractRuleOrder[2] + " " + extractRuleOrder[3] + " " + extractRuleOrder[4] + " " + extractRuleOrder[5] + " " + extractRuleOrder[6] + " " + extractRuleOrder[7]);
+        }*/
+
+        submissionObject.SetActive(false);
         shownPuzzle = Random.Range(0, 7);
         puzzleOrder = puzzleOrder.Shuffle();
         UpdateDisplay();
@@ -287,27 +340,114 @@ public class metapuzzleScript : MonoBehaviour {
         // Meta generation
         char[] evenNumbers = "02468".ToCharArray();
         char[] firstHalfAlphabet = "ABCDEFGHIJKLM".ToCharArray();
+        char[] vowels = "AEIOU".ToCharArray();
+        /*
+        if (rnd.Seed != 1)
+        {
+            bool[] conditions = {
+                alphabet.Contains(Info.GetSerialNumber().ElementAt(0)), // first character of the serial number is a letter
+                alphabet.Contains(Info.GetSerialNumber().ElementAt(1)), // second character of the serial number is a letter
+                evenNumbers.Contains(Info.GetSerialNumber().ElementAt(2)), // third character of the serial number is even
+                firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(3)), // fourth character of the serial number is in the first half of the alphabet
+                firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(4)), // fifth character of the serial number is in the first half of the alphabet
+                evenNumbers.Contains(Info.GetSerialNumber().ElementAt(5)), // sixth character of the serial number is even
+                Info.GetSerialNumberLetters().Any(x => x == 'A' ||  x == 'E' || x == 'I' || x == 'O' || x == 'U'), // serial number contains a vowel
+                Info.GetBatteryCount() % 2 == 0, // number of batteries is even
+                Info.GetBatteryHolderCount() % 2 == 0, // number of battery holders is even
+                Info.GetBatteryCount() >= 3, // at least 3 batteries
+                Info.GetBatteryHolderCount() >= 2, // at least 2 battery holders
+                Info.GetBatteryCount(Battery.AA) >= 2, // at least 2 AA batteries present
+                Info.GetBatteryCount(Battery.D) >= 2, // at least 2 D batteries present
+                Info.GetIndicators().Count() % 2 == 0, // number of indicators is even
+                Info.GetIndicators().Count() >= 2, // at least 2 indicators
+                Info.GetIndicators().Any(x => x == "BOB" || x == "CAR" || x == "SND" || x == "MSA"), // BOB, CAR, SND or MSA indicators present
+                Info.GetIndicators().Any(x => x == "FRK" || x == "SIG" || x == "CLR" || x == "IND"), // FRK, SIG, CLR or IND indicators present
+                Info.GetIndicators().Any(x => x == "NSA" || x == "FRQ" || x == "TRN" || x == "NLL"), // NSA, FRQ, TRN or NLL indicators present
+                Info.GetOnIndicators().Count() >= Info.GetOffIndicators().Count(), // lit indicators are greater than or equal to unlit indicators
+                Info.GetOnIndicators().Count() >= 1, // any lit indicators
+                Info.GetOffIndicators().Count() >= 1, // any unlit indicators
+                Info.GetPortCount() % 2 == 0, // number of ports is even
+                Info.GetPortPlateCount() % 2 == 0, // number of port plates is even
+                Info.IsPortPresent(Port.Serial), // serial port present
+                Info.IsPortPresent(Port.Parallel), // parallel port present
+                Info.IsPortPresent(Port.RJ45), // rj-45 port present
+                Info.IsPortPresent(Port.StereoRCA), // rca port present
+                Info.IsPortPresent(Port.DVI), // dvi port present
+                Info.IsPortPresent(Port.PS2), // ps/2 port present
+                Info.GetPortPlates().Any(x => x.Length == 0) // empty port plate present
+            };
+            bool[] invertedRules = { false, false, false, false, false, false };
 
-        if (alphabet.Contains(Info.GetSerialNumber().ElementAt(0)))
-            extractionMethod += 4;
-        if (alphabet.Contains(Info.GetSerialNumber().ElementAt(1)))
-            sortingMethod += 4;
-        if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(2)))
-            extractionMethod += 2;
-        if (firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(3)))
-            sortingMethod += 2;
-        if (firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(4)))
-            extractionMethod += 1;
-        if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(5)))
-            sortingMethod += 1;
+            rnd.ShuffleFisherYates(conditions);
+            for (int i = 0; i < 6; i++)
+                if (rnd.Next(2) == 0)
+                    invertedRules[i] = true;
 
-        if (extractionMethod == 0 && (sortingMethod == 0 || sortingMethod == 2))
-            sortingMethod += 4;
-        if (extractionMethod == 1 && (sortingMethod == 1 || sortingMethod == 3))
-            sortingMethod += 4;
-        if ((extractionMethod == 4 || extractionMethod == 5) && (sortingMethod == 4 || sortingMethod == 5))
-            sortingMethod -= 4;
+            DebugMsg(conditions[0] + " " + conditions[1] + " " + conditions[2] + " " + conditions[3] + " " + conditions[4] + " " + conditions[5]);
+            DebugMsg(invertedRules[0] + " " + invertedRules[1] + " " + invertedRules[2] + " " + invertedRules[3] + " " + invertedRules[4] + " " + invertedRules[5]);
+
+            if (conditions[0] ^ invertedRules[0])
+                extractionMethod += 4;
+            if (conditions[1] ^ invertedRules[1])
+                sortingMethod += 4;
+            if (conditions[2] ^ invertedRules[2])
+                extractionMethod += 2;
+            if (conditions[3] ^ invertedRules[3])
+                sortingMethod += 2;
+            if (conditions[4] ^ invertedRules[4])
+                extractionMethod += 1;
+            if (conditions[5] ^ invertedRules[5])
+                sortingMethod += 1;
+        }
+        else
+        {*/
+            if (alphabet.Contains(Info.GetSerialNumber().ElementAt(0)))
+                extractionMethod += 4;
+            if (alphabet.Contains(Info.GetSerialNumber().ElementAt(1)))
+                sortingMethod += 4;
+            if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(2)))
+                extractionMethod += 2;
+            if (firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(3)))
+                sortingMethod += 2;
+            if (firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(4)))
+                extractionMethod += 1;
+            if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(5)))
+                sortingMethod += 1;
+        //}
         
+        bool inverted = false;
+        if (extractRuleOrder[extractionMethod] == 0 && (sortRuleOrder[sortingMethod] == 0 || sortRuleOrder[sortingMethod] == 2))
+            inverted = true;
+        else if (extractRuleOrder[extractionMethod] == 1 && (sortRuleOrder[sortingMethod] == 1 || sortRuleOrder[sortingMethod] == 3))
+            inverted = true;
+        else if ((extractRuleOrder[extractionMethod] == 4 || extractionMethod == 5) && (sortRuleOrder[sortingMethod] == 4 || sortRuleOrder[sortingMethod] == 5))
+            inverted = true;
+        if (inverted)
+            switch (inversionMethod)
+            {
+                case 0:
+                    sortingMethod = (sortingMethod + 4) % 8;
+                    break;
+                case 1:
+                    sortingMethod = (sortingMethod + 2) % 4 + sortingMethod / 4 * 4;
+                    break;
+                case 2:
+                    sortingMethod = (sortingMethod + 1) % 2 + sortingMethod / 2 * 2;
+                    break;
+                case 3:
+                    extractionMethod = (extractionMethod + 4) % 8;
+                    break;
+                case 4:
+                    extractionMethod = (extractionMethod + 2) % 4 + extractionMethod / 4 * 4;
+                    break;
+                case 5:
+                    extractionMethod = (extractionMethod + 1) % 2 + extractionMethod / 2 * 2;
+                    break;
+            }
+
+        sortingMethod = sortRuleOrder[sortingMethod];
+        extractionMethod = extractRuleOrder[extractionMethod];
+
         DebugMsg("The extraction method is " + extractionNames[extractionMethod] + " and the sorting method is " + sortingNames[sortingMethod] + ".");
 
         while (!metaSuccessful)
@@ -580,6 +720,12 @@ public class metapuzzleScript : MonoBehaviour {
         blanksText.text = hangmanState;
         guessesText.text = guesses.ToString();
         DebugMsg("The solution to the puzzle is " + hangmanSolution + ".");
+        
+        for (int i = 0; i < 10; i++)
+            gallowsObjects[i].SetActive(false);
+
+        // Mental math generation
+        DebugMsg("--- MENTAL MATH ---");
 
         startingNum = Random.Range(0, 99);
         answerNum = startingNum;
@@ -590,11 +736,6 @@ public class metapuzzleScript : MonoBehaviour {
         DebugMsg("The starting number is " + startingNum + ".");
         DebugMsg("The operators are:");
 
-        for (int i = 0; i < 10; i++)
-            gallowsObjects[i].SetActive(false);
-
-        // Mental math generation
-        DebugMsg("--- MENTAL MATH ---");
         for (int i = 0; i < 7; i++)
         {
             operatorType = Random.Range(0, 4);
@@ -795,7 +936,7 @@ public class metapuzzleScript : MonoBehaviour {
             }
         }
         for (int i = 0; i < 6; i++)
-            DebugMsg(nonogramText.Substring(i*6, 6));
+            DebugMsg(nonogramText.Substring(i * 6, 6));
 
         // Sorting generation
         DebugMsg("--- SORTING ---");
@@ -855,7 +996,7 @@ public class metapuzzleScript : MonoBehaviour {
             while (impostors.Where(x => x == impostors[i]).Count() > 1)
                 impostors[i] = Random.Range(0, 25);
 
-            DebugMsg("Difference #" + (i+1) + " is at position " + (impostors[i]+1) + " in reading order.");
+            DebugMsg("Difference #" + (i + 1) + " is at position " + (impostors[i] + 1) + " in reading order.");
             switch (Random.Range(0, 3))
             {
                 case 0:
@@ -881,8 +1022,9 @@ public class metapuzzleScript : MonoBehaviour {
                     break;
             }
         }
-    }
 
+    }
+    
     // Generic stuff
     void CycleAnswer(int direction)
     {
@@ -1172,7 +1314,7 @@ public class metapuzzleScript : MonoBehaviour {
                 cellRenderers[cellPos].material = nonogramMats[0];
         }
 
-        else
+        else if (!nonogramState[cellPos])
         {
             nonogramMarked[cellPos] = !nonogramMarked[cellPos];
             if (nonogramMarked[cellPos])
