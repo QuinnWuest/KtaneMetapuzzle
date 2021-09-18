@@ -5,8 +5,11 @@ using UnityEngine;
 using KModkit;
 using System;
 using Random = UnityEngine.Random;
+using System.Text.RegularExpressions;
+using Metapuzzle;
 
-public class metapuzzleScript : MonoBehaviour {
+public class metapuzzleScript : MonoBehaviour
+{
 
     // Module stuff
     public KMBombModule Module;
@@ -108,23 +111,23 @@ public class metapuzzleScript : MonoBehaviour {
 
     // For displaying things
     int shownPuzzle = 0;
-    int[] puzzleOrder = { 0, 1, 2, 3, 4, 5, 6 };
+    Subpuzzle[] puzzleOrder = { Subpuzzle.EncodingQuiz, Subpuzzle.Hangman, Subpuzzle.MentalMath, Subpuzzle.Nonogram, Subpuzzle.Sorting, Subpuzzle.SpellingBee, Subpuzzle.SpotTheDifference };
     static readonly string[] puzzleNames = { "Encoding Quiz", "Hangman", "Mental Math", "Nonogram", "Sorting", "Spelling Bee", "Spot the Difference" };
-    bool[] solvedPuzzles = { false, false, false, false, false, false, false };
+    readonly bool[] solvedPuzzles = { false, false, false, false, false, false, false };
 
     bool inSubmissionMode = false;
 
     // Encoding quiz variables
     string encodedWord = "PLACEHOLDER";
     int encodingMethod = 0;
-    char[][] passwordOptions = { "12345678".ToCharArray(), "12345678".ToCharArray(), "12345678".ToCharArray(), "12345678".ToCharArray(), "12345678".ToCharArray() };
+    readonly char[][] passwordOptions = { "12345678".ToCharArray(), "12345678".ToCharArray(), "12345678".ToCharArray(), "12345678".ToCharArray(), "12345678".ToCharArray() };
 
     static readonly string[] encodingNames = { "Morse code", "Braille", "flag semaphore" };
     static readonly string[] morseAlphabet = { ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.." };
     static readonly string[] brailleAlphabet = { ".-----", "..----", ".--.--", ".--..-", ".---.-", "..-.--", "..-..-", "..--.-", "-.-.--", "-.-..-", ".-.---", "...---", ".-..--", ".-...-", ".-.-.-", "....--", ".....-", "...-.-", "-...--", "-....-", ".-.--.", "...--.", "-.-...", ".-..-.", ".-....", ".-.-.." };
     static readonly int[] semaphoreAlphabet = { 4, 5, 4, 6, 4, 7, 4, 0, 4, 1, 4, 2, 4, 3, 5, 6, 5, 7, 0, 2, 5, 0, 5, 1, 5, 2, 5, 3, 6, 7, 6, 0, 6, 1, 6, 2, 6, 3, 7, 0, 7, 1, 0, 3, 1, 2, 1, 3, 7, 2, 2, 3 };
 
-    int[] passwordIndices = { 0, 0, 0, 0, 0 };
+    readonly int[] passwordIndices = { 0, 0, 0, 0, 0 };
 
     // Hangman variables
     string[] validModuleNames;
@@ -134,7 +137,7 @@ public class metapuzzleScript : MonoBehaviour {
 
     int guesses = 0;
 
-    char[] qwerty = "QWERTYUIOPASDFGHJKLZXCVBNM".ToCharArray();
+    const string qwerty = "QWERTYUIOPASDFGHJKLZXCVBNM";
     bool[] guessedLetters = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
     string guessedLettersButActuallyLetters = "";
 
@@ -218,14 +221,14 @@ public class metapuzzleScript : MonoBehaviour {
         _moduleId = _moduleIdCounter++;
         // Answer button selectables
         leftSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); CycleAnswer(-1); return false; };
-        rightSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);  CycleAnswer(1); return false; };
-        answerSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Module.transform); if (!solved) {  ToggleSubmission(); } return false; };
-        
+        rightSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); CycleAnswer(1); return false; };
+        answerSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Module.transform); if (!solved) { ToggleSubmission(); } return false; };
+
         // Encoding quiz selectables
         for (int i = 0; i < 5; i++)
         {
             int j = i;
-            passwordButtons[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform); CycleLetter(j); return false; }; 
+            passwordButtons[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform); CycleLetter(j); return false; };
         }
         encodingQuizSubmitSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); SubmitEncodingQuiz(); return false; };
         // Hangman selectables
@@ -243,7 +246,7 @@ public class metapuzzleScript : MonoBehaviour {
         // Nonogram selectables
         fillSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); Toggle(); return false; };
         checkSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); CheckNonogram(); return false; };
-        clearNonogramSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); ClearNonogram();  return false; };
+        clearNonogramSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); ClearNonogram(); return false; };
         for (int i = 0; i < 36; i++)
         {
             int j = i;
@@ -1028,12 +1031,8 @@ public class metapuzzleScript : MonoBehaviour {
     // Generic stuff
     void CycleAnswer(int direction)
     {
-        shownPuzzle += direction;
-        if (shownPuzzle > 6)
-            shownPuzzle = 0;
-        if (shownPuzzle < 0)
-            shownPuzzle = 6;
-        if (!solvedPuzzles[Array.IndexOf(puzzleOrder, 2)])
+        shownPuzzle = (shownPuzzle + direction + 7) % 7;
+        if (!solvedPuzzles[Array.IndexOf(puzzleOrder, Subpuzzle.MentalMath)])
         {
             submissionText.text = "";
             submittedDigits[0] = -1;
@@ -1048,25 +1047,25 @@ public class metapuzzleScript : MonoBehaviour {
         {
             switch (puzzleOrder[shownPuzzle])
             {
-                case 0:
+                case Subpuzzle.EncodingQuiz:
                     encodingQuiz.SetActive(true);
                     break;
-                case 1:
+                case Subpuzzle.Hangman:
                     hangman.SetActive(true);
                     break;
-                case 2:
+                case Subpuzzle.MentalMath:
                     mentalMath.SetActive(true);
                     break;
-                case 3:
+                case Subpuzzle.Nonogram:
                     nonogram.SetActive(true);
                     break;
-                case 4:
+                case Subpuzzle.Sorting:
                     sorting.SetActive(true);
                     break;
-                case 5:
+                case Subpuzzle.SpellingBee:
                     spellingBee.SetActive(true);
                     break;
-                case 6:
+                case Subpuzzle.SpotTheDifference:
                     spotTheDifference.SetActive(true);
                     if (!stdTimerStarted)
                     {
@@ -1084,7 +1083,7 @@ public class metapuzzleScript : MonoBehaviour {
         else
         {
             answerRenderer.material = borderMats[0];
-            answerText.text = puzzleNames[puzzleOrder[shownPuzzle]];
+            answerText.text = puzzleNames[(int) puzzleOrder[shownPuzzle]];
         }
     }
     void ToggleSubmission()
@@ -1428,7 +1427,7 @@ public class metapuzzleScript : MonoBehaviour {
     IEnumerator SpotTheDifferenceTimer()
     {
         int secondsRemaining = 30;
-        while (!solvedPuzzles[Array.IndexOf(puzzleOrder, 6)])
+        while (!solvedPuzzles[Array.IndexOf(puzzleOrder, Subpuzzle.SpotTheDifference)])
         {
             if (secondsRemaining <= 0)
             {
@@ -1565,7 +1564,7 @@ public class metapuzzleScript : MonoBehaviour {
                 }
             }
         }
-        
+
     }
     void ClearAnswer()
     {
@@ -1734,5 +1733,152 @@ public class metapuzzleScript : MonoBehaviour {
         }
 
         return new string[] { };
+    }
+
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = new string[]
+    {
+        @"!{0} switch [switch between solve screen and current subpuzzle]",
+        @"!{0} left/right <#> [move between subpuzzles]",
+
+        @"!{0} set ABCDE [Encoding Quiz]",
+        @"!{0} guess A [Hangman]",
+        @"!{0} input 47 [Mental Math]",
+        @"!{0} clear/check/fill A1 A2/mark A1 A2 [Nonogram]",
+        @"!{0} press 1423 [Sorting]",
+        @"!{0} enter WORD [Spelling Bee]",
+        @"!{0} tap A2 B5 [Spot The Difference]",
+
+        @"!{0} submit ABCDEFG [clears input and submits answer]"
+    }.Join(" | ");
+#pragma warning restore 414
+
+    public IEnumerator ProcessTwitchCommand(string command)
+    {
+        Match m;
+        int n = 1;
+
+        if (Regex.IsMatch(command, @"^\s*switch\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            yield return null;
+            yield return new[] { answerSelectable };
+            yield break;
+        }
+
+        if ((m = Regex.Match(command, @"^\s*(?<dir>l(eft)?|(?<r>r(ight)?))(\s+(?<n>\d))?\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success
+            && (!m.Groups["n"].Success || (int.TryParse(m.Groups["n"].Value, out n) && n > 0 && n < 10)))
+        {
+            yield return null;
+            yield return Enumerable.Repeat(m.Groups["r"].Success ? rightSelectable : leftSelectable, m.Groups["n"].Success ? n : 1).ToArray();
+            yield break;
+        }
+
+        if ((m = Regex.Match(command, @"^\s*submit\s+(?<word>[A-Z]{7})\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            yield return null;
+            var list = new List<KMSelectable>();
+            if (!inSubmissionMode)
+                list.Add(answerSelectable);
+            list.Add(clearSelectable);
+            foreach (var ch in m.Groups["word"].Value)
+                list.Add(submitKeyboardSelectables[qwerty.IndexOf(char.ToUpperInvariant(ch))]);
+            yield return list;
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.EncodingQuiz && (m = Regex.Match(command, @"^\s*set\s+(?<ltrs>[A-Z]{5})\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            yield return null;
+            var input = m.Groups["ltrs"].Value.ToUpperInvariant();
+            for (var letterPos = 0; letterPos < 5; letterPos++)
+            {
+                if (!passwordOptions[letterPos].Contains(input[letterPos]))
+                {
+                    yield return string.Format("sendtochaterror Slot #{0} does not contain a letter {1}.", letterPos + 1, input[letterPos]);
+                    yield break;
+                }
+                while (passwordOptions[letterPos][passwordIndices[letterPos]] != input[letterPos])
+                    yield return new[] { passwordButtons[letterPos] };
+            }
+            yield return new[] { encodingQuizSubmitSelectable };
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.Hangman && (m = Regex.Match(command, @"^\s*guess\s+(?<ltr>[A-Z])\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            yield return null;
+            yield return new[] { keyboardSelectables[qwerty.IndexOf(char.ToUpperInvariant(m.Groups["ltr"].Value[0]))] };
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.MentalMath && (m = Regex.Match(command, @"^\s*input\s+(?<n>\d{2})\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            yield return null;
+            yield return m.Groups["n"].Value.Select(c => numberKeypadSelectables[c - '0']).ToArray();
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.Nonogram && Regex.IsMatch(command, @"^\s*clear\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            yield return null;
+            yield return new[] { clearNonogramSelectable };
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.Nonogram && Regex.IsMatch(command, @"^\s*check\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            yield return null;
+            yield return new[] { checkSelectable };
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.Nonogram && (m = Regex.Match(command, @"^\s*((?<fill>fill)|mark)\s+(?<coords>.*?)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            var list = new List<KMSelectable>();
+            if (m.Groups["fill"].Success != filling)
+                list.Add(fillSelectable);
+            foreach (var elem in m.Groups["coords"].Value.Split(new[] { ',', ' ', ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var tr = elem.Trim().ToUpperInvariant();
+                if (tr.Length != 2 || tr[0] < 'A' || tr[0] > 'F' || tr[1] < '1' || tr[1] > '6')
+                    yield break;
+                list.Add(cellSelectables[tr[0] - 'A' + 6 * (tr[1] - '1')]);
+            }
+            yield return null;
+            yield return list;
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.Sorting && (m = Regex.Match(command, @"^\s*press\s+(?<order>[1-4]{1,4})\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            yield return null;
+            yield return m.Groups["order"].Value.Select(ch => sortingButtons[ch - '1']).ToArray();
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.SpellingBee && (m = Regex.Match(command, @"^\s*enter\s+(?<word>[A-Z]{1,20})\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            var input = m.Groups["word"].Value.Trim().ToUpperInvariant();
+            if (input.Any(ch => !spellingBeeLetters.Contains(ch)))
+                yield break;
+            yield return null;
+            yield return input.Select(ch => hexagonSelectables[Array.IndexOf(spellingBeeLetters, ch)]).Concat(new[] { spellingBeeSubmitSelectable }).ToArray();
+            yield break;
+        }
+
+        if (puzzleOrder[shownPuzzle] == Subpuzzle.SpotTheDifference && (m = Regex.Match(command, @"^\s*tap\s+(?<coords>.*?)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            var list = new List<KMSelectable>();
+            foreach (var elem in m.Groups["coords"].Value.Split(new[] { ',', ' ', ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var tr = elem.Trim().ToUpperInvariant();
+                if (tr.Length != 2 || tr[0] < 'A' || tr[0] > 'E' || tr[1] < '1' || tr[1] > '5')
+                    yield break;
+                list.Add(gridSelectables1[tr[0] - 'A' + 5 * (tr[1] - '1')]);
+            }
+            yield return null;
+            yield return list;
+            yield break;
+        }
     }
 }
