@@ -1881,9 +1881,4 @@ public class metapuzzleScript : MonoBehaviour
             yield break;
         }
     }
-
-    public IEnumerator TwitchHandleForcedSolve()
-    {
-        yield break;
-    }
 }
