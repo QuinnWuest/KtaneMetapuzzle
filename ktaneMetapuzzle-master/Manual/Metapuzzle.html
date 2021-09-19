@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -254,7 +254,7 @@
 
                 <p>The extracted letters, in the correct order, will spell out the answer to the metapuzzle.</p>
                 <p>To find the extraction method and sorting method, make a 3-digit binary number, where the true conditions are 1s and the false conditions are 0s:</p>
-				<table style="margin: auto;">
+                <table style="margin: auto;">
                     <tr>
                         <th>#</th>
                         <th style="width: 45%">Extraction</th>
@@ -262,23 +262,23 @@
                     </tr>
                     <tr>
                         <td style="text-align: center;">1st</td>
-                        <td><span class="condition" id="condition-1">First character of the serial number is a letter</span></td>
-                        <td><span class="condition" id="condition-2">Second character of the serial number is a letter</span></td>
+                        <td>First character of the serial number is a letter</td>
+                        <td>Second character of the serial number is a letter</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">2nd</td>
-                        <td><span class="condition" id="condition-3">Third character of the serial number is even</span></td>
-                        <td><span class="condition" id="condition-4">Fourth character of the serial number is in the first half of the alphabet</span></td>
+                        <td>Third character of the serial number is even</td>
+                        <td>Fourth character of the serial number is in the first half of the alphabet</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">3rd</td>
-                        <td><span class="condition" id="condition-5">Fifth character of the serial number is in the first half of the alphabet</span></td>
-                        <td><span class="condition" id="condition-6">Sixth character of the serial number is even</span></td>
+                        <td>Fifth character of the serial number is in the first half of the alphabet</td>
+                        <td>Sixth character of the serial number is even</td>
                     </tr>
                 </table>
                 <br>
                 <p>Then, look them up in the table below.</p>
-                <p><b>If the extraction and sorting method have the same number of asterisks next to them</b>, invert <span id="inversionRule">the first digit of the sorting method</span>.</p>
+                <p><b>If the extraction and sorting method have the same number of asterisks next to them</b>, invert the first digit of the sorting method.</p>
                 <table>
                     <tr>
                         <th>#</th>
@@ -287,23 +287,23 @@
                     </tr>
                     <tr>
                         <td style="text-align: center; width: 10%">000</td>
-                        <td><span class="extraction" id="extraction-1">Extract the first letter. *</span></td>
-                        <td><span class="sort" id="sort-1">Sort by first letters in alphabetical order. *</span></td>
+                        <td>Extract the first letter. *</td>
+                        <td>Sort by first letters in alphabetical order. *</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">001</td>
-                        <td><span class="extraction" id="extraction-2">Extract the letter that appears twice in a row.</span></td>
-                        <td><span class="sort" id="sort-2">Sort by last letters in alphabetical order. **</span></td>
+                        <td>Extract the letter that appears twice in a row.</td>
+                        <td>Sort by last letters in alphabetical order. **</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">010</td>
-                        <td><span class="extraction" id="extraction-3">Extract the letter that appears three times.</span></td>
-                        <td><span class="sort" id="sort-3">Sort by first letters in reverse alphabetical order. *</span></td>
+                        <td>Extract the letter that appears three times.</td>
+                        <td>Sort by first letters in reverse alphabetical order. *</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">011</td>
-                        <td><span class="extraction" id="extraction-4">Extract the last letter. **</span></td>
-                        <td><span class="sort" id="sort-4">Sort by last letters in reverse alphabetical order. **</span></td>
+                        <td>Extract the last letter. **</td>
+                        <td>Sort by last letters in reverse alphabetical order. **</td>
                     </tr>
                 </table>
             </div>
@@ -323,23 +323,23 @@
                     </tr>
                     <tr>
                         <td style="text-align: center; width: 10%">100</td>
-                        <td><span class="extraction" id="extraction-5">After sorting, take the first letter of the first answer, the second letter of the second letter, etc.***</td>
-                        <td><span class="sort" id="sort-5">Sort the answers in the order they were given.*** †</td>
+                        <td>After sorting, take the first letter of the first answer, the second letter of the second letter, etc.***</td>
+                        <td>Sort the answers in the puzzle order on the module (left to right).*** †</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">101</td>
-                        <td><span class="extraction" id="extraction-6">After sorting, take the last letter of the first answer, the second-last letter of the second letter, etc.***</td>
-                        <td><span class="sort" id="sort-6">Sort the answers in the reverse of the order they were given.*** †</td>
+                        <td>After sorting, take the last letter of the first answer, the second-last letter of the second letter, etc.***</td>
+                        <td>Sort the answers in the reverse puzzle order on the module (right to left).*** †</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">110</td>
-                        <td><span class="extraction" id="extraction-7">There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter in the center of this pattern (the B, in this case).</td>
-                        <td><span class="sort" id="sort-7">Sort the answers in ascending order by length.</td>
+                        <td>There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter in the center of this pattern (the B, in this case).</td>
+                        <td>Sort the answers in ascending order by length.</td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">111</td>
-                        <td><span class="extraction" id="extraction-8">There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter on the outside of this pattern (the A, in this case).</td>
-                        <td><span class="sort" id="sort-8">Sort the answers in descending order by length.</td>
+                        <td>There will be one letter surrounded by two of the same letter (ABA, for example). Take the letter on the outside of this pattern (the A, in this case).</td>
+                        <td>Sort the answers in descending order by length.</td>
                     </tr>
                 </table>
                 <br>

@@ -404,27 +404,37 @@ public class metapuzzleScript : MonoBehaviour
         }
         else
         {*/
-            if (alphabet.Contains(Info.GetSerialNumber().ElementAt(0)))
-                extractionMethod += 4;
-            if (alphabet.Contains(Info.GetSerialNumber().ElementAt(1)))
-                sortingMethod += 4;
-            if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(2)))
-                extractionMethod += 2;
-            if (firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(3)))
-                sortingMethod += 2;
-            if (firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(4)))
-                extractionMethod += 1;
-            if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(5)))
-                sortingMethod += 1;
+        if (alphabet.Contains(Info.GetSerialNumber().ElementAt(0)))
+            extractionMethod += 4;
+        if (alphabet.Contains(Info.GetSerialNumber().ElementAt(1)))
+            sortingMethod += 4;
+        if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(2)))
+            extractionMethod += 2;
+        if (firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(3)))
+            sortingMethod += 2;
+        if (firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(4)))
+            extractionMethod += 1;
+        if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(5)))
+            sortingMethod += 1;
         //}
-        
+
+
         bool inverted = false;
         if (extractRuleOrder[extractionMethod] == 0 && (sortRuleOrder[sortingMethod] == 0 || sortRuleOrder[sortingMethod] == 2))
+        {
+            inverted = true;    
+            DebugMsg("1");
+        }
+        else if (extractRuleOrder[extractionMethod] == 3 && (sortRuleOrder[sortingMethod] == 1 || sortRuleOrder[sortingMethod] == 3))
+        {
             inverted = true;
-        else if (extractRuleOrder[extractionMethod] == 1 && (sortRuleOrder[sortingMethod] == 1 || sortRuleOrder[sortingMethod] == 3))
-            inverted = true;
+            DebugMsg("2");
+        }
         else if ((extractRuleOrder[extractionMethod] == 4 || extractionMethod == 5) && (sortRuleOrder[sortingMethod] == 4 || sortRuleOrder[sortingMethod] == 5))
+        {
             inverted = true;
+            DebugMsg("3");
+        }
         if (inverted)
             switch (inversionMethod)
             {
