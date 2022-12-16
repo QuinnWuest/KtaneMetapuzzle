@@ -220,65 +220,194 @@ public class metapuzzleScript : MonoBehaviour
     {
         _moduleId = _moduleIdCounter++;
         // Answer button selectables
-        leftSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); CycleAnswer(-1); return false; };
-        rightSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); CycleAnswer(1); return false; };
-        answerSelectable.OnInteract += delegate () { leftSelectable.AddInteractionPunch(); Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Module.transform); if (!solved) { ToggleSubmission(); } return false; };
+        leftSelectable.OnInteract += delegate ()
+        {
+            leftSelectable.AddInteractionPunch();
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+            if (solved)
+                return false;
+            CycleAnswer(-1);
+            return false;
+        };
+        rightSelectable.OnInteract += delegate ()
+        {
+            leftSelectable.AddInteractionPunch();
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+            if (solved)
+                return false;
+            CycleAnswer(1);
+            return false;
+        };
+        answerSelectable.OnInteract += delegate ()
+        {
+            leftSelectable.AddInteractionPunch();
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Module.transform);
+            if (solved)
+                return false;
+            ToggleSubmission();
+            return false;
+        };
 
         // Encoding quiz selectables
         for (int i = 0; i < 5; i++)
         {
             int j = i;
-            passwordButtons[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform); CycleLetter(j); return false; };
+            passwordButtons[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
+                if (solved)
+                    return false;
+                CycleLetter(j);
+                return false;
+            };
         }
-        encodingQuizSubmitSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); SubmitEncodingQuiz(); return false; };
+        encodingQuizSubmitSelectable.OnInteract += delegate ()
+        {
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+            if (solved)
+                return false;
+            SubmitEncodingQuiz();
+            return false;
+        };
         // Hangman selectables
         for (int i = 0; i < 26; i++)
         {
             int j = i;
-            keyboardSelectables[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform); Guess(j); return false; };
+            keyboardSelectables[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
+                if (solved)
+                    return false;
+                Guess(j);
+                return false;
+            };
         }
         // Mental math selectables
         for (int i = 0; i < 10; i++)
         {
             int j = i;
-            numberKeypadSelectables[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); EnterMath(j); return false; };
+            numberKeypadSelectables[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+                if (solved)
+                    return false;
+                EnterMath(j);
+                return false;
+            };
         }
         // Nonogram selectables
-        fillSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); Toggle(); return false; };
-        checkSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); CheckNonogram(); return false; };
-        clearNonogramSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); ClearNonogram(); return false; };
+        fillSelectable.OnInteract += delegate ()
+        {
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+            if (solved)
+                return false;
+            Toggle();
+            return false;
+        };
+        checkSelectable.OnInteract += delegate ()
+        {
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+            if (solved)
+                return false;
+            CheckNonogram();
+            return false;
+        };
+        clearNonogramSelectable.OnInteract += delegate ()
+        {
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+            if (solved)
+                return false;
+            ClearNonogram();
+            return false;
+        };
         for (int i = 0; i < 36; i++)
         {
             int j = i;
-            cellSelectables[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform); ClickCell(j); return false; };
+            cellSelectables[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
+                if (solved)
+                    return false;
+                ClickCell(j);
+                return false;
+            };
         }
         // Sorting selectables
         for (int i = 0; i < 4; i++)
         {
             int j = i;
-            sortingButtons[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); PressIcon(j); return false; };
+            sortingButtons[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+                if (solved)
+                    return false;
+                PressIcon(j);
+                return false;
+            };
         }
         // Spelling bee selectables
         for (int i = 0; i < 7; i++)
         {
             int j = i;
-            hexagonSelectables[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform); LetterPress(j); return false; };
+            hexagonSelectables[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
+                if (solved)
+                    return false;
+                LetterPress(j);
+                return false;
+            };
         }
-        spellingBeeSubmitSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); SubmitSpellingBee(); return false; };
+        spellingBeeSubmitSelectable.OnInteract += delegate ()
+        {
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+            if (solved)
+                return false;
+            SubmitSpellingBee();
+            return false;
+        };
         // Spot the difference selectables
         for (int i = 0; i < 25; i++)
         {
             int j = i;
-            gridSelectables1[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); PressButton(j); return false; };
-            gridSelectables2[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); PressButton(j); return false; };
+            gridSelectables1[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+                if (solved)
+                    return false;
+                PressButton(j);
+                return false;
+            };
+            gridSelectables2[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+                if (solved)
+                    return false;
+                PressButton(j);
+                return false;
+            };
         }
         // Submission selectables
         for (int i = 0; i < 26; i++)
         {
             int j = i;
-            submitKeyboardSelectables[i].OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform); AnswerKeyboard(j); return false; };
+            submitKeyboardSelectables[i].OnInteract += delegate ()
+            {
+                Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
+                if (solved)
+                    return false;
+                AnswerKeyboard(j);
+                return false;
+            };
         }
-        clearSelectable.OnInteract += delegate () { Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform); ClearAnswer(); return false; };
+        clearSelectable.OnInteract += delegate ()
+        {
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
+            if (solved)
+                return false;
+            ClearAnswer();
+            return false;
+        };
     }
 
     void Start()
@@ -421,7 +550,7 @@ public class metapuzzleScript : MonoBehaviour
         bool inverted = false;
         if (extractRuleOrder[extractionMethod] == 0 && (sortRuleOrder[sortingMethod] == 0 || sortRuleOrder[sortingMethod] == 2))
         {
-            inverted = true;    
+            inverted = true;
             DebugMsg("1");
         }
         else if (extractRuleOrder[extractionMethod] == 3 && (sortRuleOrder[sortingMethod] == 1 || sortRuleOrder[sortingMethod] == 3))
@@ -732,7 +861,7 @@ public class metapuzzleScript : MonoBehaviour
         blanksText.text = hangmanState;
         guessesText.text = guesses.ToString();
         DebugMsg("The solution to the puzzle is " + hangmanSolution + ".");
-        
+
         for (int i = 0; i < 10; i++)
             gallowsObjects[i].SetActive(false);
 
@@ -1036,7 +1165,7 @@ public class metapuzzleScript : MonoBehaviour
         }
 
     }
-    
+
     // Generic stuff
     void CycleAnswer(int direction)
     {
@@ -1092,7 +1221,7 @@ public class metapuzzleScript : MonoBehaviour
         else
         {
             answerRenderer.material = borderMats[0];
-            answerText.text = puzzleNames[(int) puzzleOrder[shownPuzzle]];
+            answerText.text = puzzleNames[(int)puzzleOrder[shownPuzzle]];
         }
     }
     void ToggleSubmission()
@@ -1889,5 +2018,25 @@ public class metapuzzleScript : MonoBehaviour
             yield return list;
             yield break;
         }
+    }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        if (!inSubmissionMode)
+        {
+            answerSelectable.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        if (!metaAnswer.StartsWith(submittedAnswer))
+        {
+            clearSelectable.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        for (int i = submittedAnswer.Length; i < 7; i++)
+        {
+            submitKeyboardSelectables[qwerty.IndexOf(metaAnswer[i])].OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield break;
     }
 }
