@@ -836,13 +836,12 @@ public class metapuzzleScript : MonoBehaviour
         // Hangman generation
         DebugMsg("--- HANGMAN ---");
         bool nameIsValid = false;
-        validModuleNames = Info.GetModuleNames().Where(x => x.All(y => Char.IsLetter(y) || y == ' ')).Distinct().ToArray();
+        validModuleNames = Info.GetModuleNames().Select(i => i.ToUpperInvariant()).Where(x => x.All(y => "ABCDEFGHIJKLMNOPQRSTUVWXYZ ".Contains(y))).Distinct().ToArray();
         while (!nameIsValid)
         {
             hangmanSolution = validModuleNames.PickRandom().ToUpper();
             if (hangmanSolution.Split(' ').Length <= 5 && hangmanSolution.Split(' ').All(x => x.Length < 15))
                 nameIsValid = true;
-
         }
 
         hangmanArray = hangmanSolution.ToCharArray();
