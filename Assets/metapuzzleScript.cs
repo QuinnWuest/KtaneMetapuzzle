@@ -62,7 +62,6 @@ public class metapuzzleScript : MonoBehaviour
     public TextMesh[] nonogramTexts;
     // Sorting stuff
     public GameObject sorting;
-    public Sprite[] iconTextures;
     public KMSelectable[] sortingButtons;
     public SpriteRenderer[] iconRenderers;
     public MeshRenderer[] sortingBtnRenderers;
@@ -91,6 +90,7 @@ public class metapuzzleScript : MonoBehaviour
     int _moduleId;
     bool solved;
     bool animationPlaying = false;
+    bool _readyToPress = false;
 
     // Metapuzzle generation
     int wordListLength;
@@ -190,7 +190,8 @@ public class metapuzzleScript : MonoBehaviour
     bool[] pressedBtns = { false, false, false, false };
     string[] sortedOrder;
     int[] pressOrder = { 0, 0, 0, 0 };
-    static readonly string[] bannedMods = { "Not The Screw", "Not X-Ray", "Not Poker", "Not Emoji Math", "Not Symbolic Coordinates", "Not The Bulb", "Not Word Search", "Not X01", "Simpleton't", "Not Colour Flash", "Not Connection Check", "Not Coordinates", "Not Crazy Talk", "Not Morsematics", "Not Murder", "Not Knob", "Not Venting Gas", "Not the Button", "Not Capacitor Discharge", "Not Complicated Wires", "Not Keypad", "Not Maze", "Not Memory", "Not Morse Code", "Not Password", "Not Simaze", "Not Who's On First", "Not Wire Sequence", "Not Wiresword" };
+
+    private static T[] NewArray<T>(params T[] array) { return array; }
 
     // Spelling bee variables
     string seedWord = "";
@@ -222,6 +223,8 @@ public class metapuzzleScript : MonoBehaviour
         // Answer button selectables
         leftSelectable.OnInteract += delegate ()
         {
+            if (!_readyToPress)
+                return false;
             leftSelectable.AddInteractionPunch();
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
             if (solved)
@@ -231,6 +234,8 @@ public class metapuzzleScript : MonoBehaviour
         };
         rightSelectable.OnInteract += delegate ()
         {
+            if (!_readyToPress)
+                return false;
             leftSelectable.AddInteractionPunch();
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
             if (solved)
@@ -240,6 +245,8 @@ public class metapuzzleScript : MonoBehaviour
         };
         answerSelectable.OnInteract += delegate ()
         {
+            if (!_readyToPress)
+                return false;
             leftSelectable.AddInteractionPunch();
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Module.transform);
             if (solved)
@@ -254,6 +261,8 @@ public class metapuzzleScript : MonoBehaviour
             int j = i;
             passwordButtons[i].OnInteract += delegate ()
             {
+                if (!_readyToPress)
+                    return false;
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
                 if (solved)
                     return false;
@@ -266,6 +275,8 @@ public class metapuzzleScript : MonoBehaviour
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
             if (solved)
                 return false;
+            if (!_readyToPress)
+                return false;
             SubmitEncodingQuiz();
             return false;
         };
@@ -277,6 +288,8 @@ public class metapuzzleScript : MonoBehaviour
             {
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
                 if (solved)
+                    return false;
+                if (!_readyToPress)
                     return false;
                 Guess(j);
                 return false;
@@ -291,6 +304,8 @@ public class metapuzzleScript : MonoBehaviour
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
                 if (solved)
                     return false;
+                if (!_readyToPress)
+                    return false;
                 EnterMath(j);
                 return false;
             };
@@ -301,6 +316,8 @@ public class metapuzzleScript : MonoBehaviour
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
             if (solved)
                 return false;
+            if (!_readyToPress)
+                return false;
             Toggle();
             return false;
         };
@@ -309,6 +326,8 @@ public class metapuzzleScript : MonoBehaviour
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
             if (solved)
                 return false;
+            if (!_readyToPress)
+                return false;
             CheckNonogram();
             return false;
         };
@@ -316,6 +335,8 @@ public class metapuzzleScript : MonoBehaviour
         {
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
             if (solved)
+                return false;
+            if (!_readyToPress)
                 return false;
             ClearNonogram();
             return false;
@@ -327,6 +348,8 @@ public class metapuzzleScript : MonoBehaviour
             {
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
                 if (solved)
+                    return false;
+                if (!_readyToPress)
                     return false;
                 ClickCell(j);
                 return false;
@@ -341,6 +364,8 @@ public class metapuzzleScript : MonoBehaviour
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
                 if (solved)
                     return false;
+                if (!_readyToPress)
+                    return false;
                 PressIcon(j);
                 return false;
             };
@@ -354,6 +379,8 @@ public class metapuzzleScript : MonoBehaviour
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
                 if (solved)
                     return false;
+                if (!_readyToPress)
+                    return false;
                 LetterPress(j);
                 return false;
             };
@@ -362,6 +389,8 @@ public class metapuzzleScript : MonoBehaviour
         {
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
             if (solved)
+                return false;
+            if (!_readyToPress)
                 return false;
             SubmitSpellingBee();
             return false;
@@ -375,6 +404,8 @@ public class metapuzzleScript : MonoBehaviour
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
                 if (solved)
                     return false;
+                if (!_readyToPress)
+                    return false;
                 PressButton(j);
                 return false;
             };
@@ -382,6 +413,8 @@ public class metapuzzleScript : MonoBehaviour
             {
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
                 if (solved)
+                    return false;
+                if (!_readyToPress)
                     return false;
                 PressButton(j);
                 return false;
@@ -396,6 +429,8 @@ public class metapuzzleScript : MonoBehaviour
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, Module.transform);
                 if (solved)
                     return false;
+                if (!_readyToPress)
+                    return false;
                 AnswerKeyboard(j);
                 return false;
             };
@@ -405,6 +440,8 @@ public class metapuzzleScript : MonoBehaviour
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Module.transform);
             if (solved)
                 return false;
+            if (!_readyToPress)
+                return false;
             ClearAnswer();
             return false;
         };
@@ -412,58 +449,6 @@ public class metapuzzleScript : MonoBehaviour
 
     void Start()
     {
-        // Ruleseed set-up
-        /*
-        var rnd = Ruleseed.GetRNG();
-        int[] uh = { 0, 1, 4, 2, 3, 5 };
-        bool ruleseedSuccessful = false;
-
-        if (rnd.Seed != 1)
-        {
-            while (!ruleseedSuccessful)
-            {
-                rnd.ShuffleFisherYates(sortRuleOrder);
-                rnd.ShuffleFisherYates(extractRuleOrder);
-                inversionMethod = rnd.Next(6);
-
-                ruleseedSuccessful = true;
-
-                switch (inversionMethod)
-                {
-                    case 0: // invert the first digit of the sorting method
-                        for (int i = 0; i < 3; i++)
-                            if ((Array.IndexOf(sortRuleOrder, uh[i]) + 4) % 8 == Array.IndexOf(sortRuleOrder, uh[i + 3]))
-                                ruleseedSuccessful = false;
-                        break;
-                    case 1: // invert the second digit of the sorting method
-                        for (int i = 0; i < 3; i++)
-                            if ((Array.IndexOf(sortRuleOrder, uh[i]) + 2) % 4 + Array.IndexOf(sortRuleOrder, uh[i]) / 4 * 4 == Array.IndexOf(sortRuleOrder, uh[i + 3]))
-                                ruleseedSuccessful = false;
-                        break;
-                    case 2: // invert the last digit of the sorting method
-                        for (int i = 0; i < 3; i++)
-                            if ((Array.IndexOf(sortRuleOrder, uh[i]) + 1) % 2 + Array.IndexOf(sortRuleOrder, uh[i]) / 2 * 2 == Array.IndexOf(sortRuleOrder, uh[i + 3]))
-                                ruleseedSuccessful = false;
-                        break;
-                    case 3: // invert the first digit of the extraction method
-                        if ((Array.IndexOf(extractRuleOrder, 4) + 4) % 8 == Array.IndexOf(extractRuleOrder, 5))
-                            ruleseedSuccessful = false;
-                        break;
-                    case 4: // invert the second digit of the extraction method
-                        if ((Array.IndexOf(extractRuleOrder, 4) + 2) % 4 + Array.IndexOf(extractRuleOrder, 4) / 4 * 4 == Array.IndexOf(extractRuleOrder, 5))
-                            ruleseedSuccessful = false;
-                        break;
-                    case 5: // invert the last digit of the extraction method
-                        if ((Array.IndexOf(extractRuleOrder, 4) + 1) % 2 + Array.IndexOf(extractRuleOrder, 4) / 2 * 2 == Array.IndexOf(extractRuleOrder, 5))
-                            ruleseedSuccessful = false;
-                        break;
-                }
-            }
-
-            DebugMsg(sortRuleOrder[0] + " " + sortRuleOrder[1] + " " + sortRuleOrder[2] + " " + sortRuleOrder[3] + " " + sortRuleOrder[4] + " " + sortRuleOrder[5] + " " + sortRuleOrder[6] + " " + sortRuleOrder[7]);
-            DebugMsg(extractRuleOrder[0] + " " + extractRuleOrder[1] + " " + extractRuleOrder[2] + " " + extractRuleOrder[3] + " " + extractRuleOrder[4] + " " + extractRuleOrder[5] + " " + extractRuleOrder[6] + " " + extractRuleOrder[7]);
-        }*/
-
         submissionObject.SetActive(false);
         shownPuzzle = Random.Range(0, 7);
         puzzleOrder = puzzleOrder.Shuffle();
@@ -472,66 +457,6 @@ public class metapuzzleScript : MonoBehaviour
         // Meta generation
         char[] evenNumbers = "02468".ToCharArray();
         char[] firstHalfAlphabet = "ABCDEFGHIJKLM".ToCharArray();
-        /*
-        if (rnd.Seed != 1)
-        {
-            bool[] conditions = {
-                alphabet.Contains(Info.GetSerialNumber().ElementAt(0)), // first character of the serial number is a letter
-                alphabet.Contains(Info.GetSerialNumber().ElementAt(1)), // second character of the serial number is a letter
-                evenNumbers.Contains(Info.GetSerialNumber().ElementAt(2)), // third character of the serial number is even
-                firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(3)), // fourth character of the serial number is in the first half of the alphabet
-                firstHalfAlphabet.Contains(Info.GetSerialNumber().ElementAt(4)), // fifth character of the serial number is in the first half of the alphabet
-                evenNumbers.Contains(Info.GetSerialNumber().ElementAt(5)), // sixth character of the serial number is even
-                Info.GetSerialNumberLetters().Any(x => x == 'A' ||  x == 'E' || x == 'I' || x == 'O' || x == 'U'), // serial number contains a vowel
-                Info.GetBatteryCount() % 2 == 0, // number of batteries is even
-                Info.GetBatteryHolderCount() % 2 == 0, // number of battery holders is even
-                Info.GetBatteryCount() >= 3, // at least 3 batteries
-                Info.GetBatteryHolderCount() >= 2, // at least 2 battery holders
-                Info.GetBatteryCount(Battery.AA) >= 2, // at least 2 AA batteries present
-                Info.GetBatteryCount(Battery.D) >= 2, // at least 2 D batteries present
-                Info.GetIndicators().Count() % 2 == 0, // number of indicators is even
-                Info.GetIndicators().Count() >= 2, // at least 2 indicators
-                Info.GetIndicators().Any(x => x == "BOB" || x == "CAR" || x == "SND" || x == "MSA"), // BOB, CAR, SND or MSA indicators present
-                Info.GetIndicators().Any(x => x == "FRK" || x == "SIG" || x == "CLR" || x == "IND"), // FRK, SIG, CLR or IND indicators present
-                Info.GetIndicators().Any(x => x == "NSA" || x == "FRQ" || x == "TRN" || x == "NLL"), // NSA, FRQ, TRN or NLL indicators present
-                Info.GetOnIndicators().Count() >= Info.GetOffIndicators().Count(), // lit indicators are greater than or equal to unlit indicators
-                Info.GetOnIndicators().Count() >= 1, // any lit indicators
-                Info.GetOffIndicators().Count() >= 1, // any unlit indicators
-                Info.GetPortCount() % 2 == 0, // number of ports is even
-                Info.GetPortPlateCount() % 2 == 0, // number of port plates is even
-                Info.IsPortPresent(Port.Serial), // serial port present
-                Info.IsPortPresent(Port.Parallel), // parallel port present
-                Info.IsPortPresent(Port.RJ45), // rj-45 port present
-                Info.IsPortPresent(Port.StereoRCA), // rca port present
-                Info.IsPortPresent(Port.DVI), // dvi port present
-                Info.IsPortPresent(Port.PS2), // ps/2 port present
-                Info.GetPortPlates().Any(x => x.Length == 0) // empty port plate present
-            };
-            bool[] invertedRules = { false, false, false, false, false, false };
-
-            rnd.ShuffleFisherYates(conditions);
-            for (int i = 0; i < 6; i++)
-                if (rnd.Next(2) == 0)
-                    invertedRules[i] = true;
-
-            DebugMsg(conditions[0] + " " + conditions[1] + " " + conditions[2] + " " + conditions[3] + " " + conditions[4] + " " + conditions[5]);
-            DebugMsg(invertedRules[0] + " " + invertedRules[1] + " " + invertedRules[2] + " " + invertedRules[3] + " " + invertedRules[4] + " " + invertedRules[5]);
-
-            if (conditions[0] ^ invertedRules[0])
-                extractionMethod += 4;
-            if (conditions[1] ^ invertedRules[1])
-                sortingMethod += 4;
-            if (conditions[2] ^ invertedRules[2])
-                extractionMethod += 2;
-            if (conditions[3] ^ invertedRules[3])
-                sortingMethod += 2;
-            if (conditions[4] ^ invertedRules[4])
-                extractionMethod += 1;
-            if (conditions[5] ^ invertedRules[5])
-                sortingMethod += 1;
-        }
-        else
-        {*/
         if (alphabet.Contains(Info.GetSerialNumber().ElementAt(0)))
             extractionMethod += 4;
         if (alphabet.Contains(Info.GetSerialNumber().ElementAt(1)))
@@ -544,7 +469,6 @@ public class metapuzzleScript : MonoBehaviour
             extractionMethod += 1;
         if (evenNumbers.Contains(Info.GetSerialNumber().ElementAt(5)))
             sortingMethod += 1;
-        //}
 
 
         bool inverted = false;
@@ -834,35 +758,7 @@ public class metapuzzleScript : MonoBehaviour
         }
 
         // Hangman generation
-        DebugMsg("--- HANGMAN ---");
-        bool nameIsValid = false;
-        validModuleNames = Info.GetModuleNames().Select(i => i.ToUpperInvariant()).Where(x => x.All(y => "ABCDEFGHIJKLMNOPQRSTUVWXYZ ".Contains(y))).Distinct().ToArray();
-        while (!nameIsValid)
-        {
-            hangmanSolution = validModuleNames.PickRandom().ToUpper();
-            if (hangmanSolution.Split(' ').Length <= 5 && hangmanSolution.Split(' ').All(x => x.Length < 15))
-                nameIsValid = true;
-        }
-
-        hangmanArray = hangmanSolution.ToCharArray();
-        for (int i = 0; i < hangmanArray.Length; i++)
-        {
-            if (hangmanArray[i] == ' ')
-            {
-                hangmanState = hangmanState.TrimEnd();
-                hangmanState += "\n";
-            }
-            else
-                hangmanState += "_ ";
-        }
-
-        hangmanState = hangmanState.TrimEnd();
-        blanksText.text = hangmanState;
-        guessesText.text = guesses.ToString();
-        DebugMsg("The solution to the puzzle is " + hangmanSolution + ".");
-
-        for (int i = 0; i < 10; i++)
-            gallowsObjects[i].SetActive(false);
+        StartCoroutine(HangmanGen());
 
         // Mental math generation
         DebugMsg("--- MENTAL MATH ---");
@@ -1078,21 +974,9 @@ public class metapuzzleScript : MonoBehaviour
         for (int i = 0; i < 6; i++)
             DebugMsg(nonogramText.Substring(i * 6, 6));
 
-        // Sorting generation
-        DebugMsg("--- SORTING ---");
-        DebugMsg("The modules shown are:");
-        for (int i = 0; i < 4; i++)
-        {
-            sortingIndices[i] = Random.Range(0, iconTextures.Length);
-            while (sortingIndices.Where(x => x == sortingIndices[i]).Count() > 1 || bannedMods.Contains(iconTextures[sortingIndices[i]].name))
-                sortingIndices[i] = Random.Range(0, iconTextures.Length);
-            sortingIconNames[i] = iconTextures[sortingIndices[i]].name;
-            DebugMsg(sortingIconNames[i]);
-            iconRenderers[i].sprite = iconTextures[sortingIndices[i]];
-        }
-        sortedOrder = sortingIconNames.OrderBy(x => x).ToArray();
-        for (int i = 0; i < 4; i++)
-            pressOrder[i] = Array.IndexOf(sortingIconNames, sortedOrder[i]);
+        // sortsortsort
+
+        IconFetch.Instance.WaitForFetch(OnFetched);
 
         // Spelling bee generation
         seedWord = MainWordList.List.Where(x => x.Distinct().Count() == 7).PickRandom();
@@ -1163,6 +1047,41 @@ public class metapuzzleScript : MonoBehaviour
             }
         }
 
+    }
+
+    private IEnumerator HangmanGen()
+    {
+        yield return null;
+        DebugMsg("--- HANGMAN ---");
+        bool nameIsValid = false;
+        validModuleNames = Info.GetModuleNames().Select(i => i.ToUpperInvariant()).Where(x => x.All(y => "ABCDEFGHIJKLMNOPQRSTUVWXYZ ".Contains(y))).Distinct().ToArray();
+        Debug.Log("<> " + validModuleNames.Join(", "));
+        while (!nameIsValid)
+        {
+            hangmanSolution = validModuleNames.PickRandom().ToUpper();
+            if (hangmanSolution.Split(' ').Length <= 5 && hangmanSolution.Split(' ').All(x => x.Length < 15))
+                nameIsValid = true;
+        }
+
+        hangmanArray = hangmanSolution.ToCharArray();
+        for (int i = 0; i < hangmanArray.Length; i++)
+        {
+            if (hangmanArray[i] == ' ')
+            {
+                hangmanState = hangmanState.TrimEnd();
+                hangmanState += "\n";
+            }
+            else
+                hangmanState += "_ ";
+        }
+
+        hangmanState = hangmanState.TrimEnd();
+        blanksText.text = hangmanState;
+        guessesText.text = guesses.ToString();
+        DebugMsg("The solution to the puzzle is " + hangmanSolution + ".");
+
+        for (int i = 0; i < 10; i++)
+            gallowsObjects[i].SetActive(false);
     }
 
     // Generic stuff
@@ -1472,6 +1391,7 @@ public class metapuzzleScript : MonoBehaviour
             DebugMsg("You pressed " + sortingIconNames[iconPos] + " in Sorting. That was correct.");
             sortingBtnRenderers[iconPos].material = sortingMats[1];
             pressedBtns[iconPos] = true;
+            // poob
 
             if (!pressedBtns.Contains(false))
             {
@@ -1872,6 +1792,62 @@ public class metapuzzleScript : MonoBehaviour
         return new string[] { };
     }
 
+    private readonly Texture2D[] Textures = new Texture2D[4];
+
+    private void OnFetched(bool error)
+    {
+        /* Use for testing if Mod IDs work. Either add or remove a / after this asterisk: *
+        for (int i = 0; i < _moduleList.Length; i++)
+        {
+            var a = _moduleList[i][1];
+            Debug.Log(a);
+            var b = IconFetch.Instance.GetIcon(a);
+        }
+        /**/
+
+        DebugMsg("--- SORTING ---");
+        DebugMsg("The modules shown are:");
+
+        if (error)
+        {
+            //show error message, allow button solve etc. 
+            Debug.LogFormat("[Metapuzzle #{0}] The module failed to fetch the icons. Sorting has been solved early.", _moduleId);
+            solvedPuzzles[Array.IndexOf(puzzleOrder, Subpuzzle.Sorting)] = true;
+            _readyToPress = true;
+            for (int i = 0; i < 4; i++)
+            {
+                pressedBtns[i] = true;
+                sortingBtnRenderers[i].material = sortingMats[1];
+            }
+            DebugMsg("You unlocked the answer " + feederAnswers[shownPuzzle] + ".");
+            UpdateDisplay();
+            return;
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            sortingIndices[i] = Random.Range(0, _moduleList.Length);
+            while (sortingIndices.Where(x => x == sortingIndices[i]).Count() > 1)
+                sortingIndices[i] = Random.Range(0, _moduleList.Length);
+
+            var modId = _moduleList[sortingIndices[i]][1];
+
+            Textures[i] = IconFetch.Instance.GetIcon(modId);
+            Textures[i].wrapMode = TextureWrapMode.Clamp;
+            Textures[i].filterMode = FilterMode.Point;
+
+            sortingIconNames[i] = _moduleList[sortingIndices[i]][0];
+            DebugMsg(sortingIconNames[i]);
+            var t = Textures[i];
+            iconRenderers[i].sprite = Sprite.Create(t, new Rect(0.0f, 0.0f, t.width, t.height), new Vector2(0.5f, 0.5f), 100.0f);
+        }
+        sortedOrder = sortingIconNames.OrderBy(x => x).ToArray();
+        for (int i = 0; i < 4; i++)
+            pressOrder[i] = Array.IndexOf(sortingIconNames, sortedOrder[i]);
+
+        _readyToPress = true;
+    }
+
 #pragma warning disable 414
     private readonly string TwitchHelpMessage = new string[]
     {
@@ -2038,4 +2014,1333 @@ public class metapuzzleScript : MonoBehaviour
         }
         yield break;
     }
+
+    private static readonly string[][] _moduleList = NewArray
+    (
+        new string[] { "Capacitor Discharge", "NeedyCapacitor" },
+        new string[] { "Complicated Wires", "Venn" },
+        new string[] { "Keypad", "Keypad" },
+        new string[] { "Knob", "NeedyKnob" },
+        new string[] { "Maze", "Maze" },
+        new string[] { "Memory", "Memory" },
+        new string[] { "Morse Code", "Morse" },
+        new string[] { "Password", "Password" },
+        new string[] { "Simon Says", "Simon" },
+        new string[] { "The Button", "BigButton" },
+        new string[] { "Venting Gas", "NeedyVentGas" },
+        new string[] { "Who's on First", "WhosOnFirst" },
+        new string[] { "Wire Sequence", "WireSequence" },
+        new string[] { "Wires", "Wires" },
+        new string[] { "Colour Flash", "ColourFlash" },
+        new string[] { "Piano Keys", "PianoKeys" },
+        new string[] { "Semaphore", "Semaphore" },
+        new string[] { "Emoji Math", "Emoji Math" },
+        new string[] { "Math", "Needy Math" },
+        new string[] { "Lights Out", "LightsOut" },
+        new string[] { "Switches", "switchModule" },
+        new string[] { "Two Bits", "TwoBits" },
+        new string[] { "Anagrams", "AnagramsModule" },
+        new string[] { "Word Scramble", "WordScrambleModule" },
+        new string[] { "Combination Lock", "combinationLock" },
+        new string[] { "Filibuster", "Filibuster" },
+        new string[] { "Motion Sense", "MotionSense" },
+        new string[] { "Answering Questions", "NeedyVentV2" },
+        new string[] { "Foreign Exchange Rates", "ForeignExchangeRates" },
+        new string[] { "Listening", "Listening" },
+        new string[] { "Round Keypad", "KeypadV2" },
+        new string[] { "Connection Check", "graphModule" },
+        new string[] { "Morsematics", "MorseV2" },
+        new string[] { "Orientation Cube", "OrientationCube" },
+        new string[] { "Forget Me Not", "MemoryV2" },
+        new string[] { "Letter Keys", "LetterKeys" },
+        new string[] { "Astrology", "spwizAstrology" },
+        new string[] { "Rotary Phone", "NeedyKnobV2" },
+        new string[] { "Logic", "Logic" },
+        new string[] { "Adventure Game", "spwizAdventureGame" },
+        new string[] { "Crazy Talk", "CrazyTalk" },
+        new string[] { "Mystic Square", "MysticSquareModule" },
+        new string[] { "Turn The Key", "TurnTheKey" },
+        new string[] { "Cruel Piano Keys", "CruelPianoKeys" },
+        new string[] { "Plumbing", "MazeV2" },
+        new string[] { "Safety Safe", "PasswordV2" },
+        new string[] { "Tetris", "spwizTetris" },
+        new string[] { "Chess", "ChessModule" },
+        new string[] { "Cryptography", "CryptModule" },
+        new string[] { "Turn The Keys", "TurnTheKeyAdvanced" },
+        new string[] { "Mouse In The Maze", "MouseInTheMaze" },
+        new string[] { "Silly Slots", "SillySlots" },
+        new string[] { "Number Pad", "NumberPad" },
+        new string[] { "Simon States", "SimonV2" },
+        new string[] { "Laundry", "Laundry" },
+        new string[] { "Alphabet", "alphabet" },
+        new string[] { "Probing", "Probing" },
+        new string[] { "Caesar Cipher", "CaesarCipherModule" },
+        new string[] { "Resistors", "resistors" },
+        new string[] { "Skewed Slots", "SkewedSlotsModule" },
+        new string[] { "Microcontroller", "Microcontroller" },
+        new string[] { "Perspective Pegs", "spwizPerspectivePegs" },
+        new string[] { "Murder", "murder" },
+        new string[] { "The Gamepad", "TheGamepadModule" },
+        new string[] { "Tic Tac Toe", "TicTacToeModule" },
+        new string[] { "Monsplode, Fight!", "monsplodeFight" },
+        new string[] { "Who's That Monsplode?", "monsplodeWho" },
+        new string[] { "Shape Shift", "shapeshift" },
+        new string[] { "Follow the Leader", "FollowTheLeaderModule" },
+        new string[] { "Friendship", "FriendshipModule" },
+        new string[] { "The Bulb", "TheBulbModule" },
+        new string[] { "Blind Alley", "BlindAlleyModule" },
+        new string[] { "English Test", "EnglishTest" },
+        new string[] { "Sea Shells", "SeaShells" },
+        new string[] { "Rock-Paper-Scissors-Lizard-Spock", "RockPaperScissorsLizardSpockModule" },
+        new string[] { "Square Button", "ButtonV2" },
+        new string[] { "Hexamaze", "HexamazeModule" },
+        new string[] { "Bitmaps", "BitmapsModule" },
+        new string[] { "Colored Squares", "ColoredSquaresModule" },
+        new string[] { "Adjacent Letters", "AdjacentLettersModule" },
+        new string[] { "Third Base", "ThirdBase" },
+        new string[] { "Souvenir", "SouvenirModule" },
+        new string[] { "Word Search", "WordSearchModule" },
+        new string[] { "Broken Buttons", "BrokenButtonsModule" },
+        new string[] { "Simon Screams", "SimonScreamsModule" },
+        new string[] { "Modules Against Humanity", "ModuleAgainstHumanity" },
+        new string[] { "Complicated Buttons", "complicatedButtonsModule" },
+        new string[] { "Battleship", "BattleshipModule" },
+        new string[] { "Symbolic Password", "symbolicPasswordModule" },
+        new string[] { "Text Field", "TextField" },
+        new string[] { "Wire Placement", "WirePlacementModule" },
+        new string[] { "Double-Oh", "DoubleOhModule" },
+        new string[] { "Cheap Checkout", "CheapCheckoutModule" },
+        new string[] { "Coordinates", "CoordinatesModule" },
+        new string[] { "Light Cycle", "LightCycleModule" },
+        new string[] { "HTTP Response", "http" },
+        new string[] { "Color Math", "colormath" },
+        new string[] { "Rhythms", "MusicRhythms" },
+        new string[] { "Only Connect", "OnlyConnectModule" },
+        new string[] { "Neutralization", "neutralization" },
+        new string[] { "Web Design", "webDesign" },
+        new string[] { "Chord Qualities", "ChordQualities" },
+        new string[] { "Creation", "CreationModule" },
+        new string[] { "Rubik's Cube", "RubiksCubeModule" },
+        new string[] { "FizzBuzz", "fizzBuzzModule" },
+        new string[] { "The Clock", "TheClockModule" },
+        new string[] { "LED Encryption", "LEDEnc" },
+        new string[] { "Bitwise Operations", "BitOps" },
+        new string[] { "Edgework", "EdgeworkModule" },
+        new string[] { "Fast Math", "fastMath" },
+        new string[] { "Minesweeper", "MinesweeperModule" },
+        new string[] { "Zoo", "ZooModule" },
+        new string[] { "Binary LEDs", "BinaryLeds" },
+        new string[] { "Boolean Venn Diagram", "booleanVennModule" },
+        new string[] { "Point of Order", "PointOfOrderModule" },
+        new string[] { "Ice Cream", "iceCreamModule" },
+        new string[] { "Hex To Decimal", "EternitySDec" },
+        new string[] { "The Screw", "screw" },
+        new string[] { "Yahtzee", "YahtzeeModule" },
+        new string[] { "X-Ray", "XRayModule" },
+        new string[] { "QR Code", "QRCode" },
+        new string[] { "Button Masher", "buttonMasherNeedy" },
+        new string[] { "Random Number Generator", "rng" },
+        new string[] { "Color Morse", "ColorMorseModule" },
+        new string[] { "Mastermind Cruel", "Mastermind Cruel" },
+        new string[] { "Mastermind Simple", "Mastermind Simple" },
+        new string[] { "Gridlock", "GridlockModule" },
+        new string[] { "Big Circle", "BigCircle" },
+        new string[] { "Morse-A-Maze", "MorseAMaze" },
+        new string[] { "Colored Switches", "ColoredSwitchesModule" },
+        new string[] { "Perplexing Wires", "PerplexingWiresModule" },
+        new string[] { "Monsplode Trading Cards", "monsplodeCards" },
+        new string[] { "Game of Life Simple", "GameOfLifeSimple" },
+        new string[] { "Game of Life Cruel", "GameOfLifeCruel" },
+        new string[] { "Nonogram", "NonogramModule" },
+        new string[] { "Refill that Beer!", "NeedyBeer" },
+        new string[] { "S.E.T.", "SetModule" },
+        new string[] { "Color Generator", "Color Generator" },
+        new string[] { "Painting", "Painting" },
+        new string[] { "Shape Memory", "needyShapeMemory" },
+        new string[] { "Symbol Cycle", "SymbolCycleModule" },
+        new string[] { "Hunting", "hunting" },
+        new string[] { "Extended Password", "ExtendedPassword" },
+        new string[] { "Curriculum", "curriculum" },
+        new string[] { "Braille", "BrailleModule" },
+        new string[] { "Mafia", "MafiaModule" },
+        new string[] { "Festive Piano Keys", "FestivePianoKeys" },
+        new string[] { "Flags", "FlagsModule" },
+        new string[] { "Timezone", "timezone" },
+        new string[] { "Polyhedral Maze", "PolyhedralMazeModule" },
+        new string[] { "Poker", "Poker" },
+        new string[] { "Symbolic Coordinates", "symbolicCoordinates" },
+        new string[] { "Poetry", "poetry" },
+        new string[] { "Sonic the Hedgehog", "sonic" },
+        new string[] { "Button Sequence", "buttonSequencesModule" },
+        new string[] { "Algebra", "algebra" },
+        new string[] { "Visual Impairment", "visual_impairment" },
+        new string[] { "The Jukebox", "jukebox" },
+        new string[] { "Identity Parade", "identityParade" },
+        new string[] { "Backgrounds", "Backgrounds" },
+        new string[] { "Blind Maze", "BlindMaze" },
+        new string[] { "Maintenance", "maintenance" },
+        new string[] { "Mortal Kombat", "mortalKombat" },
+        new string[] { "Faulty Backgrounds", "FaultyBackgrounds" },
+        new string[] { "Mashematics", "mashematics" },
+        new string[] { "Modern Cipher", "modernCipher" },
+        new string[] { "Radiator", "radiator" },
+        new string[] { "LED Grid", "ledGrid" },
+        new string[] { "Sink", "Sink" },
+        new string[] { "The iPhone", "iPhone" },
+        new string[] { "The Swan", "theSwan" },
+        new string[] { "Waste Management", "wastemanagement" },
+        new string[] { "Human Resources", "HumanResourcesModule" },
+        new string[] { "Skyrim", "skyrim" },
+        new string[] { "Burglar Alarm", "burglarAlarm" },
+        new string[] { "Press X", "PressX" },
+        new string[] { "Error Codes", "errorCodes" },
+        new string[] { "European Travel", "europeanTravel" },
+        new string[] { "Rapid Buttons", "rapidButtons" },
+        new string[] { "LEGOs", "LEGOModule" },
+        new string[] { "Rubik's Clock", "rubiksClock" },
+        new string[] { "Font Select", "FontSelect" },
+        new string[] { "Pie", "pieModule" },
+        new string[] { "The Stopwatch", "stopwatch" },
+        new string[] { "Forget Everything", "HexiEvilFMN" },
+        new string[] { "Logic Gates", "logicGates" },
+        new string[] { "The London Underground", "londonUnderground" },
+        new string[] { "The Wire", "wire" },
+        new string[] { "Color Decoding", "Color Decoding" },
+        new string[] { "Grid Matching", "GridMatching" },
+        new string[] { "The Sun", "sun" },
+        new string[] { "Playfair Cipher", "Playfair" },
+        new string[] { "Tangrams", "Tangrams" },
+        new string[] { "Cooking", "cooking" },
+        new string[] { "The Number", "theNumber" },
+        new string[] { "Superlogic", "SuperlogicModule" },
+        new string[] { "The Moon", "moon" },
+        new string[] { "The Cube", "cube" },
+        new string[] { "Dr. Doctor", "DrDoctorModule" },
+        new string[] { "Tax Returns", "taxReturns" },
+        new string[] { "The Jewel Vault", "jewelVault" },
+        new string[] { "Digital Root", "digitalRoot" },
+        new string[] { "Graffiti Numbers", "graffitiNumbers" },
+        new string[] { "Marble Tumble", "MarbleTumbleModule" },
+        new string[] { "X01", "X01" },
+        new string[] { "Logical Buttons", "logicalButtonsModule" },
+        new string[] { "The Code", "theCodeModule" },
+        new string[] { "Tap Code", "tapCode" },
+        new string[] { "Simon Sends", "SimonSendsModule" },
+        new string[] { "Simon Sings", "SimonSingsModule" },
+        new string[] { "Greek Calculus", "greekCalculus" },
+        new string[] { "Synonyms", "synonyms" },
+        new string[] { "Simon Shrieks", "SimonShrieksModule" },
+        new string[] { "Complex Keypad", "complexKeypad" },
+        new string[] { "Lasers", "lasers" },
+        new string[] { "Subways", "subways" },
+        new string[] { "Turtle Robot", "turtleRobot" },
+        new string[] { "Guitar Chords", "guitarChords" },
+        new string[] { "Calendar", "calendar" },
+        new string[] { "USA Maze", "USA" },
+        new string[] { "Binary Tree", "binaryTree" },
+        new string[] { "The Time Keeper", "timeKeeper" },
+        new string[] { "Black Hole", "BlackHoleModule" },
+        new string[] { "Lightspeed", "lightspeed" },
+        new string[] { "Simon's Star", "simonsStar" },
+        new string[] { "Morse War", "MorseWar" },
+        new string[] { "Maze Scrambler", "MazeScrambler" },
+        new string[] { "Mineseeker", "mineseeker" },
+        new string[] { "The Stock Market", "stockMarket" },
+        new string[] { "The Number Cipher", "numberCipher" },
+        new string[] { "Alphabet Numbers", "alphabetNumbers" },
+        new string[] { "British Slang", "britishSlang" },
+        new string[] { "Double Color", "doubleColor" },
+        new string[] { "Equations", "equations" },
+        new string[] { "Maritime Flags", "MaritimeFlagsModule" },
+        new string[] { "Determinants", "determinant" },
+        new string[] { "Pattern Cube", "PatternCubeModule" },
+        new string[] { "Know Your Way", "KnowYourWay" },
+        new string[] { "Splitting The Loot", "SplittingTheLootModule" },
+        new string[] { "Character Shift", "characterShift" },
+        new string[] { "Simon Samples", "simonSamples" },
+        new string[] { "Dragon Energy", "dragonEnergy" },
+        new string[] { "Uncolored Squares", "UncoloredSquaresModule" },
+        new string[] { "Flashing Lights", "flashingLights" },
+        new string[] { "Synchronization", "SynchronizationModule" },
+        new string[] { "The Switch", "BigSwitch" },
+        new string[] { "Reverse Morse", "reverseMorse" },
+        new string[] { "Manometers", "manometers" },
+        new string[] { "Shikaku", "shikaku" },
+        new string[] { "Wire Spaghetti", "wireSpaghetti" },
+        new string[] { "Module Homework", "KritHomework" },
+        new string[] { "Tennis", "TennisModule" },
+        new string[] { "Benedict Cumberbatch", "benedictCumberbatch" },
+        new string[] { "Boggle", "boggle" },
+        new string[] { "Horrible Memory", "horribleMemory" },
+        new string[] { "Signals", "Signals" },
+        new string[] { "Command Prompt", "KritCMDPrompt" },
+        new string[] { "Boolean Maze", "boolMaze" },
+        new string[] { "Sonic & Knuckles", "sonicKnuckles" },
+        new string[] { "Quintuples", "quintuples" },
+        new string[] { "The Sphere", "sphere" },
+        new string[] { "Coffeebucks", "coffeebucks" },
+        new string[] { "Colorful Madness", "ColorfulMadness" },
+        new string[] { "Bases", "bases" },
+        new string[] { "Lion's Share", "LionsShareModule" },
+        new string[] { "Snooker", "snooker" },
+        new string[] { "Blackjack", "KritBlackjack" },
+        new string[] { "Party Time", "PartyTime" },
+        new string[] { "Accumulation", "accumulation" },
+        new string[] { "The Plunger Button", "plungerButton" },
+        new string[] { "The Digit", "TheDigitModule" },
+        new string[] { "The Jack-O'-Lantern", "jackOLantern" },
+        new string[] { "T-Words", "tWords" },
+        new string[] { "Divided Squares", "DividedSquaresModule" },
+        new string[] { "Connection Device", "KritConnectionDev" },
+        new string[] { "Instructions", "instructions" },
+        new string[] { "Valves", "valves" },
+        new string[] { "Blockbusters", "blockbusters" },
+        new string[] { "Catchphrase", "catchphrase" },
+        new string[] { "Countdown", "countdown" },
+        new string[] { "Cruel Countdown", "cruelCountdown" },
+        new string[] { "Encrypted Morse", "EncryptedMorse" },
+        new string[] { "The Crystal Maze", "crystalMaze" },
+        new string[] { "IKEA", "qSwedishMaze" },
+        new string[] { "Retirement", "retirement" },
+        new string[] { "Periodic Table", "periodicTable" },
+        new string[] { "Schlag den Bomb", "qSchlagDenBomb" },
+        new string[] { "Mahjong", "MahjongModule" },
+        new string[] { "Kudosudoku", "KudosudokuModule" },
+        new string[] { "The Radio", "KritRadio" },
+        new string[] { "Modulo", "modulo" },
+        new string[] { "Number Nimbleness", "numberNimbleness" },
+        new string[] { "Challenge & Contact", "challengeAndContact" },
+        new string[] { "Pay Respects", "lgndPayRespects" },
+        new string[] { "The Triangle", "triangle" },
+        new string[] { "Sueet Wall", "SueetWall" },
+        new string[] { "Christmas Presents", "christmasPresents" },
+        new string[] { "Hot Potato", "HotPotato" },
+        new string[] { "Functions", "qFunctions" },
+        new string[] { "Hieroglyphics", "hieroglyphics" },
+        new string[] { "Needy Mrs Bob", "needyMrsBob" },
+        new string[] { "Scripting", "KritScripts" },
+        new string[] { "Simon Spins", "SimonSpinsModule" },
+        new string[] { "Cursed Double-Oh", "CursedDoubleOhModule" },
+        new string[] { "Ten-Button Color Code", "TenButtonColorCode" },
+        new string[] { "Crackbox", "CrackboxModule" },
+        new string[] { "Street Fighter", "streetFighter" },
+        new string[] { "The Labyrinth", "labyrinth" },
+        new string[] { "Color Match", "lgndColorMatch" },
+        new string[] { "Spinning Buttons", "spinningButtons" },
+        new string[] { "The Festive Jukebox", "festiveJukebox" },
+        new string[] { "Skinny Wires", "skinnyWires" },
+        new string[] { "The Hangover", "hangover" },
+        new string[] { "Binary Puzzle", "BinaryPuzzleModule" },
+        new string[] { "Factory Maze", "factoryMaze" },
+        new string[] { "Broken Guitar Chords", "BrokenGuitarChordsModule" },
+        new string[] { "Dominoes", "dominoes" },
+        new string[] { "Hogwarts", "HogwartsModule" },
+        new string[] { "Regular Crazy Talk", "RegularCrazyTalkModule" },
+        new string[] { "Simon Speaks", "SimonSpeaksModule" },
+        new string[] { "Discolored Squares", "DiscoloredSquaresModule" },
+        new string[] { "Krazy Talk", "krazyTalk" },
+        new string[] { "Flip The Coin", "KritFlipTheCoin" },
+        new string[] { "Numbers", "Numbers" },
+        new string[] { "Alchemy", "JuckAlchemy" },
+        new string[] { "Cookie Jars", "cookieJars" },
+        new string[] { "Free Parking", "freeParking" },
+        new string[] { "Simon's Stages", "simonsStages" },
+        new string[] { "Varicolored Squares", "VaricoloredSquaresModule" },
+        new string[] { "Simon Squawks", "simonSquawks" },
+        new string[] { "Zoni", "lgndZoni" },
+        new string[] { "Mad Memory", "MadMemory" },
+        new string[] { "Unrelated Anagrams", "unrelatedAnagrams" },
+        new string[] { "Bartending", "BartendingModule" },
+        new string[] { "Question Mark", "Questionmark" },
+        new string[] { "Decolored Squares", "DecoloredSquaresModule" },
+        new string[] { "Flavor Text EX", "FlavorTextCruel" },
+        new string[] { "Flavor Text", "FlavorText" },
+        new string[] { "Shapes And Bombs", "ShapesBombs" },
+        new string[] { "Homophones", "homophones" },
+        new string[] { "DetoNATO", "Detonato" },
+        new string[] { "Air Traffic Controller", "NeedyAirTrafficController" },
+        new string[] { "SYNC-125 [3]", "sync125_3" },
+        new string[] { "Morse Identification", "lgndMorseIdentification" },
+        new string[] { "Westeros", "westeros" },
+        new string[] { "LED Math", "lgndLEDMath" },
+        new string[] { "Pigpen Rotations", "pigpenRotations" },
+        new string[] { "Alphabetical Order", "alphabeticOrder" },
+        new string[] { "Simon Sounds", "simonSounds" },
+        new string[] { "The Fidget Spinner", "theFidgetSpinner" },
+        new string[] { "Simon's Sequence", "simonsSequence" },
+        new string[] { "Harmony Sequence", "harmonySequence" },
+        new string[] { "Simon Scrambles", "simonScrambles" },
+        new string[] { "Unfair Cipher", "unfairCipher" },
+        new string[] { "Melody Sequencer", "melodySequencer" },
+        new string[] { "Colorful Insanity", "ColorfulInsanity" },
+        new string[] { "Gadgetron Vendor", "lgndGadgetronVendor" },
+        new string[] { "Left and Right", "leftandRight" },
+        new string[] { "Passport Control", "passportControl" },
+        new string[] { "Wingdings", "needyWingdings" },
+        new string[] { "The Hexabutton", "hexabutton" },
+        new string[] { "The Plunger", "needyPlunger" },
+        new string[] { "Genetic Sequence", "geneticSequence" },
+        new string[] { "Micro-Modules", "KritMicroModules" },
+        new string[] { "Elder Futhark", "elderFuthark" },
+        new string[] { "Module Maze", "ModuleMaze" },
+        new string[] { "Tasha Squeals", "tashaSqueals" },
+        new string[] { "Forget This", "forgetThis" },
+        new string[] { "Digital Cipher", "digitalCipher" },
+        new string[] { "Burger Alarm", "burgerAlarm" },
+        new string[] { "Draw", "draw" },
+        new string[] { "Grocery Store", "groceryStore" },
+        new string[] { "Subscribe to Pewdiepie", "subscribeToPewdiepie" },
+        new string[] { "Lombax Cubes", "lgndLombaxCubes" },
+        new string[] { "Mega Man 2", "megaMan2" },
+        new string[] { "Purgatory", "PurgatoryModule" },
+        new string[] { "The Stare", "StareModule" },
+        new string[] { "Graphic Memory", "graphicMemory" },
+        new string[] { "Quiz Buzz", "quizBuzz" },
+        new string[] { "Wavetapping", "Wavetapping" },
+        new string[] { "The Hypercube", "TheHypercubeModule" },
+        new string[] { "Speak English", "speakEnglish" },
+        new string[] { "Seven Wires", "sevenWires" },
+        new string[] { "Stack'em", "stackem" },
+        new string[] { "Colored Keys", "lgndColoredKeys" },
+        new string[] { "The Troll", "troll" },
+        new string[] { "Planets", "planets" },
+        new string[] { "The Necronomicon", "necronomicon" },
+        new string[] { "Four-Card Monte", "Krit4CardMonte" },
+        new string[] { "aa", "aa" },
+        new string[] { "Alpha", "lgndAlpha" },
+        new string[] { "Digit String", "digitString" },
+        new string[] { "The Giant's Drink", "giantsDrink" },
+        new string[] { "Hidden Colors", "lgndHiddenColors" },
+        new string[] { "Snap!", "lgndSnap" },
+        new string[] { "Colour Code", "colourcode" },
+        new string[] { "Brush Strokes", "brushStrokes" },
+        new string[] { "Vexillology", "vexillology" },
+        new string[] { "Odd One Out", "OddOneOutModule" },
+        new string[] { "Mazematics", "mazematics" },
+        new string[] { "The Triangle Button", "theTriangleButton" },
+        new string[] { "Equations X", "equationsXModule" },
+        new string[] { "Maze³", "maze3" },
+        new string[] { "Gryphons", "gryphons" },
+        new string[] { "Arithmelogic", "arithmelogic" },
+        new string[] { "Roman Art", "romanArtModule" },
+        new string[] { "Faulty Sink", "FaultySink" },
+        new string[] { "Simon Stops", "simonStops" },
+        new string[] { "Morse Buttons", "morseButtons" },
+        new string[] { "Terraria Quiz", "lgndTerrariaQuiz" },
+        new string[] { "Baba Is Who?", "babaIsWho" },
+        new string[] { "Daylight Directions", "daylightDirections" },
+        new string[] { "Modulus Manipulation", "modulusManipulation" },
+        new string[] { "Risky Wires", "riskyWires" },
+        new string[] { "Simon Stores", "simonStores" },
+        new string[] { "Triangle Buttons", "triangleButtons" },
+        new string[] { "Cryptic Password", "CrypticPassword" },
+        new string[] { "Stained Glass", "stainedGlass" },
+        new string[] { "The Block", "theBlock" },
+        new string[] { "Bamboozling Button", "bamboozlingButton" },
+        new string[] { "Insane Talk", "insanetalk" },
+        new string[] { "Transmitted Morse", "transmittedMorseModule" },
+        new string[] { "A Mistake", "MistakeModule" },
+        new string[] { "Green Arrows", "greenArrowsModule" },
+        new string[] { "Red Arrows", "redArrowsModule" },
+        new string[] { "Encrypted Equations", "EncryptedEquationsModule" },
+        new string[] { "Encrypted Values", "EncryptedValuesModule" },
+        new string[] { "Yellow Arrows", "yellowArrowsModule" },
+        new string[] { "Forget Them All", "forgetThemAll" },
+        new string[] { "Ordered Keys", "orderedKeys" },
+        new string[] { "Blue Arrows", "blueArrowsModule" },
+        new string[] { "Sticky Notes", "stickyNotes" },
+        new string[] { "Hyperactive Numbers", "lgndHyperactiveNumbers" },
+        new string[] { "Orange Arrows", "orangeArrowsModule" },
+        new string[] { "Unordered Keys", "unorderedKeys" },
+        new string[] { "Reordered Keys", "reorderedKeys" },
+        new string[] { "Button Grid", "buttonGrid" },
+        new string[] { "Find The Date", "DateFinder" },
+        new string[] { "Misordered Keys", "misorderedKeys" },
+        new string[] { "The Matrix", "matrix" },
+        new string[] { "Purple Arrows", "purpleArrowsModule" },
+        new string[] { "Bordered Keys", "borderedKeys" },
+        new string[] { "The Dealmaker", "thedealmaker" },
+        new string[] { "Seven Deadly Sins", "sevenDeadlySins" },
+        new string[] { "The Ultracube", "TheUltracubeModule" },
+        new string[] { "Symbolic Colouring", "symbolicColouring" },
+        new string[] { "Recorded Keys", "recordedKeys" },
+        new string[] { "The Deck of Many Things", "deckOfManyThings" },
+        new string[] { "Character Codes", "characterCodes" },
+        new string[] { "Disordered Keys", "disorderedKeys" },
+        new string[] { "Raiding Temples", "raidingTemples" },
+        new string[] { "Bomb Diffusal", "bombDiffusal" },
+        new string[] { "Pong", "NeedyPong" },
+        new string[] { "Tallordered Keys", "tallorderedKeys" },
+        new string[] { "Cruel Ten Seconds", "cruel10sec" },
+        new string[] { "Ten Seconds", "10seconds" },
+        new string[] { "Boolean Keypad", "BooleanKeypad" },
+        new string[] { "Calculus", "calcModule" },
+        new string[] { "Double Expert", "doubleExpert" },
+        new string[] { "Pictionary", "pictionaryModule" },
+        new string[] { "Toon Enough", "toonEnough" },
+        new string[] { "Qwirkle", "qwirkle" },
+        new string[] { "Antichamber", "antichamber" },
+        new string[] { "Simon Simons", "simonSimons" },
+        new string[] { "Constellations", "constellations" },
+        new string[] { "Forget Enigma", "forgetEnigma" },
+        new string[] { "Lucky Dice", "luckyDice" },
+        new string[] { "Cruel Digital Root", "cruelDigitalRootModule" },
+        new string[] { "Prime Checker", "PrimeChecker" },
+        new string[] { "Faulty Digital Root", "faultyDigitalRootModule" },
+        new string[] { "The Crafting Table", "needycrafting" },
+        new string[] { "Boot Too Big", "bootTooBig" },
+        new string[] { "Vigenère Cipher", "vigenereCipher" },
+        new string[] { "Langton's Ant", "langtonAnt" },
+        new string[] { "Old Fogey", "oldFogey" },
+        new string[] { "Insanagrams", "insanagrams" },
+        new string[] { "Treasure Hunt", "treasureHunt" },
+        new string[] { "Snakes and Ladders", "snakesAndLadders" },
+        new string[] { "Module Movements", "moduleMovements" },
+        new string[] { "Bamboozled Again", "bamboozledAgain" },
+        new string[] { "Roman Numerals", "romanNumeralsModule" },
+        new string[] { "Safety Square", "safetySquare" },
+        new string[] { "Colo(u)r Talk", "colourTalk" },
+        new string[] { "Annoying Arrows", "lgndAnnoyingArrows" },
+        new string[] { "Block Stacks", "blockStacks" },
+        new string[] { "Boolean Wires", "booleanWires" },
+        new string[] { "Double Arrows", "doubleArrows" },
+        new string[] { "Caesar Cycle", "caesarCycle" },
+        new string[] { "Partial Derivatives", "partialDerivatives" },
+        new string[] { "Vectors", "vectorsModule" },
+        new string[] { "Forget Us Not", "forgetUsNot" },
+        new string[] { "Needy Piano", "needyPiano" },
+        new string[] { "Affine Cycle", "affineCycle" },
+        new string[] { "Pigpen Cycle", "pigpenCycle" },
+        new string[] { "Flower Patch", "flowerPatch" },
+        new string[] { "Playfair Cycle", "playfairCycle" },
+        new string[] { "Jumble Cycle", "jumbleCycle" },
+        new string[] { "Alpha-Bits", "alphaBits" },
+        new string[] { "Forget Perspective", "qkForgetPerspective" },
+        new string[] { "Organization", "organizationModule" },
+        new string[] { "Jack Attack", "jackAttack" },
+        new string[] { "Binary", "Binary" },
+        new string[] { "Hill Cycle", "hillCycle" },
+        new string[] { "Ultimate Cycle", "ultimateCycle" },
+        new string[] { "Chord Progressions", "chordProgressions" },
+        new string[] { "Matchematics", "matchematics" },
+        new string[] { "Bob Barks", "ksmBobBarks" },
+        new string[] { "Simon's On First", "simonsOnFirst" },
+        new string[] { "Forget Me Now", "ForgetMeNow" },
+        new string[] { "Weird Al Yankovic", "weirdAlYankovic" },
+        new string[] { "Simon Selects", "simonSelectsModule" },
+        new string[] { "Cryptic Cycle", "crypticCycle" },
+        new string[] { "Simon Literally Says", "ksmSimonLitSays" },
+        new string[] { "The Witness", "thewitness" },
+        new string[] { "Bone Apple Tea", "boneAppleTea" },
+        new string[] { "Masyu", "masyuModule" },
+        new string[] { "Robot Programming", "robotProgramming" },
+        new string[] { "Hold Ups", "KritHoldUps" },
+        new string[] { "Red Cipher", "redCipher" },
+        new string[] { "A-maze-ing Buttons", "ksmAmazeingButtons" },
+        new string[] { "Flash Memory", "FlashMemory" },
+        new string[] { "Desert Bus", "desertBus" },
+        new string[] { "Common Sense", "commonSense" },
+        new string[] { "Orange Cipher", "orangeCipher" },
+        new string[] { "Needy Flower Mash", "R4YNeedyFlowerMash" },
+        new string[] { "The Very Annoying Button", "veryAnnoyingButton" },
+        new string[] { "Unown Cipher", "UnownCipher" },
+        new string[] { "TetraVex", "ksmTetraVex" },
+        new string[] { "Meter", "meter" },
+        new string[] { "The Modkit", "modkit" },
+        new string[] { "Timing is Everything", "timingIsEverything" },
+        new string[] { "Bamboozling Button Grid", "bamboozlingButtonGrid" },
+        new string[] { "Fruits", "fruits" },
+        new string[] { "The Rule", "theRule" },
+        new string[] { "Footnotes", "footnotes" },
+        new string[] { "Lousy Chess", "lousyChess" },
+        new string[] { "Module Listening", "moduleListening" },
+        new string[] { "Garfield Kart", "garfieldKart" },
+        new string[] { "Green Cipher", "greenCipher" },
+        new string[] { "Kooky Keypad", "kookyKeypadModule" },
+        new string[] { "Yellow Cipher", "yellowCipher" },
+        new string[] { "RGB Maze", "rgbMaze" },
+        new string[] { "Blue Cipher", "blueCipher" },
+        new string[] { "The Legendre Symbol", "legendreSymbol" },
+        new string[] { "Forget Me Later", "forgetMeLater" },
+        new string[] { "Keypad Lock", "keypadLock" },
+        new string[] { "Heraldry", "heraldry" },
+        new string[] { "Faulty RGB Maze", "faultyrgbMaze" },
+        new string[] { "Indigo Cipher", "indigoCipher" },
+        new string[] { "Violet Cipher", "violetCipher" },
+        new string[] { "Chinese Counting", "chineseCounting" },
+        new string[] { "Color Addition", "colorAddition" },
+        new string[] { "Encryption Bingo", "encryptionBingo" },
+        new string[] { "Tower of Hanoi", "towerOfHanoi" },
+        new string[] { "Keypad Combinations", "keypadCombinations" },
+        new string[] { "Kanji", "KanjiModule" },
+        new string[] { "UltraStores", "UltraStores" },
+        new string[] { "Geometry Dash", "geometryDashModule" },
+        new string[] { "Ternary Converter", "qkTernaryConverter" },
+        new string[] { "N&Ms", "NandMs" },
+        new string[] { "Eight Pages", "lgndEightPages" },
+        new string[] { "The Colored Maze", "coloredMaze" },
+        new string[] { "White Cipher", "whiteCipher" },
+        new string[] { "Gray Cipher", "grayCipher" },
+        new string[] { "Black Cipher", "blackCipher" },
+        new string[] { "The Hyperlink", "hyperlink" },
+        new string[] { "Loopover", "loopover" },
+        new string[] { "Corners", "CornersModule" },
+        new string[] { "Divisible Numbers", "divisibleNumbers" },
+        new string[] { "The High Score", "ksmHighScore" },
+        new string[] { "Ingredients", "ingredients" },
+        new string[] { "Cruel Boolean Maze", "boolMazeCruel" },
+        new string[] { "Intervals", "intervals" },
+        new string[] { "Jenga", "jenga" },
+        new string[] { "Cheep Checkout", "cheepCheckout" },
+        new string[] { "Spelling Bee", "spellingBee" },
+        new string[] { "Memorable Buttons", "memorableButtons" },
+        new string[] { "Thinking Wires", "thinkingWiresModule" },
+        new string[] { "Object Shows", "objectShows" },
+        new string[] { "Seven Choose Four", "sevenChooseFour" },
+        new string[] { "Lunchtime", "lunchtime" },
+        new string[] { "Natures", "mcdNatures" },
+        new string[] { "Neutrinos", "neutrinos" },
+        new string[] { "Scavenger Hunt", "scavengerHunt" },
+        new string[] { "Polygons", "polygons" },
+        new string[] { "Ultimate Cipher", "ultimateCipher" },
+        new string[] { "Codenames", "codenames" },
+        new string[] { "Odd Mod Out", "lgndOddModOut" },
+        new string[] { "Blinkstop", "blinkstopModule" },
+        new string[] { "Logic Statement", "logicStatement" },
+        new string[] { "Ultimate Custom Night", "qkUCN" },
+        new string[] { "Hinges", "hinges" },
+        new string[] { "Answering Can Be Fun", "AnsweringCanBeFun" },
+        new string[] { "BuzzFizz", "buzzfizz" },
+        new string[] { "egg", "bigegg" },
+        new string[] { "Forget It Not", "forgetItNot" },
+        new string[] { "Time Accumulation", "timeAccumulation" },
+        new string[] { "Rainbow Arrows", "ksmRainbowArrows" },
+        new string[] { "Digital Dials", "digitalDials" },
+        new string[] { "Multicolored Switches", "R4YMultiColoredSwitches" },
+        new string[] { "Time Signatures", "timeSignatures" },
+        new string[] { "Hereditary Base Notation", "hereditaryBaseNotationModule" },
+        new string[] { "Passcodes", "xtrpasscodes" },
+        new string[] { "Lines of Code", "linesOfCode" },
+        new string[] { "The cRule", "the_cRule" },
+        new string[] { "Colorful Dials", "colorfulDials" },
+        new string[] { "Encrypted Dice", "EncryptedDice" },
+        new string[] { "Prime Encryption", "primeEncryption" },
+        new string[] { "Naughty or Nice", "lgndNaughtyOrNice" },
+        new string[] { "Following Orders", "FollowingOrders" },
+        new string[] { "Binary Grid", "binaryGrid" },
+        new string[] { "Cruel Keypads", "CruelKeypads" },
+        new string[] { "Matrices", "MatrixQuiz" },
+        new string[] { "The Black Page", "TheBlackPage" },
+        new string[] { "Simon Forgets", "simonForgets" },
+        new string[] { "Greek Letter Grid", "greekLetterGrid" },
+        new string[] { "Bamboozling Time Keeper", "bamboozlingTimeKeeper" },
+        new string[] { "Scalar Dials", "scalarDials" },
+        new string[] { "Keywords", "xtrkeywords" },
+        new string[] { "The World's Largest Button", "WorldsLargestButton" },
+        new string[] { "State of Aggregation", "stateOfAggregation" },
+        new string[] { "Dreamcipher", "ksmDreamcipher" },
+        new string[] { "Brainf---", "brainf" },
+        new string[] { "Boozleglyph Identification", "boozleglyphIdentification" },
+        new string[] { "Echolocation", "echolocation" },
+        new string[] { "Hyperneedy", "hyperneedy" },
+        new string[] { "Patience", "patience" },
+        new string[] { "Rotating Squares", "rotatingSquares" },
+        new string[] { "Boxing", "boxing" },
+        new string[] { "Topsy Turvy", "topsyTurvy" },
+        new string[] { "Railway Cargo Loading", "RailwayCargoLoading" },
+        new string[] { "ASCII Art", "asciiArt" },
+        new string[] { "Conditional Buttons", "conditionalButtons" },
+        new string[] { "Semamorse", "semamorse" },
+        new string[] { "Hide and Seek", "hideAndSeek" },
+        new string[] { "Symbolic Tasha", "symbolicTasha" },
+        new string[] { "Alphabetical Ruling", "alphabeticalRuling" },
+        new string[] { "Microphone", "Microphone" },
+        new string[] { "Widdershins", "widdershins" },
+        new string[] { "Dimension Disruption", "dimensionDisruption" },
+        new string[] { "Lockpick Maze", "KritLockpickMaze" },
+        new string[] { "V", "V" },
+        new string[] { "A Message", "AMessage" },
+        new string[] { "Alliances", "alliances" },
+        new string[] { "Silhouettes", "silhouettes" },
+        new string[] { "Dungeon", "dungeon" },
+        new string[] { "Unicode", "UnicodeModule" },
+        new string[] { "Password Generator", "pwGenerator" },
+        new string[] { "Baccarat", "baccarat" },
+        new string[] { "Guess Who?", "GuessWho" },
+        new string[] { "Alphabetize", "Alphabetize" },
+        new string[] { "Reverse Alphabetize", "ReverseAlphabetize" },
+        new string[] { "Gatekeeper", "gatekeeper" },
+        new string[] { "Light Bulbs", "LightBulbs" },
+        new string[] { "Five Letter Words", "FiveLetterWords" },
+        new string[] { "Settlers of KTaNE", "SettlersOfKTaNE" },
+        new string[] { "The Hidden Value", "theHiddenValue" },
+        new string[] { "Blue", "BlueNeedy" },
+        new string[] { "Red", "RedNeedy" },
+        new string[] { "Directional Button", "directionalButton" },
+        new string[] { "Misery Squares", "SquaresOfMisery" },
+        new string[] { "The Simpleton", "SimpleButton" },
+        new string[] { "Dungeon 2nd Floor", "dungeon2" },
+        new string[] { "Sequences", "sequencesModule" },
+        new string[] { "Vcrcs", "VCRCS" },
+        new string[] { "Wire Ordering", "kataWireOrdering" },
+        new string[] { "Quaternions", "quaternions" },
+        new string[] { "Abstract Sequences", "abstractSequences" },
+        new string[] { "osu!", "osu" },
+        new string[] { "Shifting Maze", "MazeShifting" },
+        new string[] { "Art Appreciation", "AppreciateArt" },
+        new string[] { "Placeholder Talk", "placeholderTalk" },
+        new string[] { "Role Reversal", "roleReversal" },
+        new string[] { "Sorting", "sorting" },
+        new string[] { "Pattern Lock", "patternLock" },
+        new string[] { "Shell Game", "shellGame" },
+        new string[] { "Cheat Checkout", "kataCheatCheckout" },
+        new string[] { "Minecraft Cipher", "minecraftCipher" },
+        new string[] { "Quick Arithmetic", "QuickArithmetic" },
+        new string[] { "Forget The Colors", "ForgetTheColors" },
+        new string[] { "The Samsung", "theSamsung" },
+        new string[] { "Etterna", "etterna" },
+        new string[] { "Cruel Garfield Kart", "CruelGarfieldKart" },
+        new string[] { "Recolored Switches", "R4YRecoloredSwitches" },
+        new string[] { "Reverse Polish Notation", "revPolNot" },
+        new string[] { "Snowflakes", "snowflakes" },
+        new string[] { "Exoplanets", "exoplanets" },
+        new string[] { "Faulty Seven Segment Displays", "faulty7SegmentDisplays" },
+        new string[] { "Forget Infinity", "forgetInfinity" },
+        new string[] { "Simon Stages", "simonStages" },
+        new string[] { "Malfunctions", "malfunctions" },
+        new string[] { "Roger", "roger" },
+        new string[] { "Stock Images", "StockImages" },
+        new string[] { "Minecraft Parody", "minecraftParody" },
+        new string[] { "Minecraft Survival", "kataMinecraftSurvival" },
+        new string[] { "NumberWang", "kikiNumberWang" },
+        new string[] { "Shuffled Strings", "shuffledStrings" },
+        new string[] { "Fencing", "fencing" },
+        new string[] { "RPS Judging", "RPSJudging" },
+        new string[] { "Strike/Solve", "strikeSolve" },
+        new string[] { "The Twin", "TheTwinModule" },
+        new string[] { "Uncolored Switches", "R4YUncoloredSwitches" },
+        new string[] { "Name Changer", "nameChanger" },
+        new string[] { "Just Numbers", "JustNumbersModule" },
+        new string[] { "Flag Identification", "needyFlagIdentification" },
+        new string[] { "Lying Indicators", "lyingIndicators" },
+        new string[] { "Training Text", "TrainingText" },
+        new string[] { "Caesar's Maths", "caesarsMaths" },
+        new string[] { "Wonder Cipher", "WonderCipher" },
+        new string[] { "Random Access Memory", "RAM" },
+        new string[] { "Triamonds", "triamonds" },
+        new string[] { "Button Order", "buttonOrder" },
+        new string[] { "Stars", "stars" },
+        new string[] { "Elder Password", "elderPassword" },
+        new string[] { "Iconic", "iconic" },
+        new string[] { "Switching Maze", "MazeSwitching" },
+        new string[] { "Ladder Lottery", "ladderLottery" },
+        new string[] { "Mystery Module", "mysterymodule" },
+        new string[] { "Co-op Harmony Sequence", "coopharmonySequence" },
+        new string[] { "Arrow Talk", "ArrowTalk" },
+        new string[] { "BoozleTalk", "BoozleTalk" },
+        new string[] { "Crazy Talk With A K", "CrazyTalkWithAK" },
+        new string[] { "Deck Creating", "kataDeckCreating" },
+        new string[] { "Jaden Smith Talk", "JadenSmithTalk" },
+        new string[] { "KayMazey Talk", "KMazeyTalk" },
+        new string[] { "Kilo Talk", "KiloTalk" },
+        new string[] { "Quote Crazy Talk End Quote", "QuoteCrazyTalkEndQuote" },
+        new string[] { "Standard Crazy Talk", "StandardCrazyTalk" },
+        new string[] { "Siffron", "siffron" },
+        new string[] { "Audio Morse", "lgndAudioMorse" },
+        new string[] { "Palindromes", "palindromes" },
+        new string[] { "Pow", "powModule" },
+        new string[] { "Badugi", "ksmBadugi" },
+        new string[] { "Chicken Nuggets", "ChickenNuggets" },
+        new string[] { "Type Racer", "typeRacer" },
+        new string[] { "Masher The Bottun", "masherTheBottun" },
+        new string[] { "Negativity", "Negativity" },
+        new string[] { "Spot the Difference", "SpotTheDifference" },
+        new string[] { "Tetriamonds", "tetriamonds" },
+        new string[] { "M&Ns", "MandNs" },
+        new string[] { "Yes and No", "yesandno" },
+        new string[] { "Goofy's Game", "goofysgame" },
+        new string[] { "Integer Trees", "IntegerTrees" },
+        new string[] { "Plant Identification", "PlantIdentification" },
+        new string[] { "Module Rick", "ModuleRick" },
+        new string[] { "Earthbound", "EarthboundModule" },
+        new string[] { "Pickup Identification", "PickupIdentification" },
+        new string[] { "Life Iteration", "LifeIteration" },
+        new string[] { "Accelerando", "accelerando" },
+        new string[] { "Encrypted Hangman", "encryptedHangman" },
+        new string[] { "Thread the Needle", "threadTheNeedle" },
+        new string[] { "Color Braille", "ColorBrailleModule" },
+        new string[] { "Reaction", "xtrreaction" },
+        new string[] { "The Heart", "TheHeart" },
+        new string[] { "Remote Math", "remotemath" },
+        new string[] { "Reflex", "lgndReflex" },
+        new string[] { "Password Destroyer", "pwDestroyer" },
+        new string[] { "hexOS", "hexOS" },
+        new string[] { "Multitask", "multitask" },
+        new string[] { "Typing Tutor", "needyTypingTutor" },
+        new string[] { "Brawler Database", "brawlerDatabaseModule" },
+        new string[] { "Kyudoku", "kyudoku" },
+        new string[] { "Simon Stashes", "simonStashes" },
+        new string[] { "Shortcuts", "shortcuts" },
+        new string[] { "More Code", "MoreCode" },
+        new string[] { "OmegaForget", "omegaForget" },
+        new string[] { "Basic Morse", "BasicMorse" },
+        new string[] { "Bloxx", "bloxx" },
+        new string[] { "Dictation", "Dictation" },
+        new string[] { "Kugelblitz", "kugelblitz" },
+        new string[] { "Mental Math", "MentalMath" },
+        new string[] { "Needy Game of Life", "gameOfLifeNeedy" },
+        new string[] { "Emotiguy Identification", "EmotiguyIdentification" },
+        new string[] { "IPA", "ipa" },
+        new string[] { "DACH Maze", "DACH" },
+        new string[] { "Dumb Waiters", "dumbWaiters" },
+        new string[] { "Jailbreak", "Jailbreak" },
+        new string[] { "NeeDeez Nuts", "NeeDeezNuts" },
+        new string[] { "Birthdays", "birthdays" },
+        new string[] { "Match 'em", "matchem" },
+        new string[] { "Gnomish Puzzle", "qkGnomishPuzzle" },
+        new string[] { "Navinums", "navinums" },
+        new string[] { "A>N<D", "ANDmodule" },
+        new string[] { "Bridges", "bridges" },
+        new string[] { "RGB Logic", "rgbLogic" },
+        new string[] { "Juxtacolored Squares", "JuxtacoloredSquaresModule" },
+        new string[] { "Shifted Maze", "shiftedMaze" },
+        new string[] { "Amnesia", "Amnesia" },
+        new string[] { "The Missing Letter", "theMissingLetter" },
+        new string[] { "Wolf, Goat, and Cabbage", "wolfGoatCabbageModule" },
+        new string[] { "Plug-Ins", "plugins" },
+        new string[] { "Synesthesia", "synesthesia" },
+        new string[] { "English Entries", "EnglishEntries" },
+        new string[] { "The Cruel Duck", "theCruelDuck" },
+        new string[] { "The Duck", "theDuck" },
+        new string[] { "Identifying Soulless", "identifyingSoulless" },
+        new string[] { "Factoring", "factoring" },
+        new string[] { "Ultimate Tic Tac Toe", "ultimateTicTacToe" },
+        new string[] { "Lyrical Nonsense", "lyricalNonsense" },
+        new string[] { "NOT NOT", "notnot" },
+        new string[] { "Puzzword", "PuzzwordModule" },
+        new string[] { "RGB Sequences", "RGBSequences" },
+        new string[] { "Deaf Alley", "deafAlleyModule" },
+        new string[] { "int##", "int##" },
+        new string[] { "Repo Selector", "qkRepoSelector" },
+        new string[] { "Blind Arrows", "blindArrows" },
+        new string[] { "D-CODE", "xelDcode" },
+        new string[] { "RGB Arithmetic", "rgbArithmetic" },
+        new string[] { "Sound Design", "soundDesign" },
+        new string[] { "Fifteen", "fifteen" },
+        new string[] { "Rapid Subtraction", "rapidSubtraction" },
+        new string[] { "Don't Touch Anything", "dontTouchAnything" },
+        new string[] { "Pixel Cipher", "pixelcipher" },
+        new string[] { "The Great Void", "greatVoid" },
+        new string[] { "Negation", "xelNegation" },
+        new string[] { "Prime Time", "primeTime" },
+        new string[] { "The Calculator", "TheCalculator" },
+        new string[] { "ASCII Maze", "asciiMaze" },
+        new string[] { "SixTen", "sixten" },
+        new string[] { "Ultralogic", "Ultralogic" },
+        new string[] { "Busy Beaver", "busyBeaver" },
+        new string[] { "Spangled Stars", "spangledStars" },
+        new string[] { "Digital Clock", "digitalClock" },
+        new string[] { "Assembly Code", "assemblyCode" },
+        new string[] { "Cruel Match 'em", "matchemcruel" },
+        new string[] { "Simon's Ultimate Showdown", "simonsUltimateShowdownModule" },
+        new string[] { "Boomdas", "boomdas" },
+        new string[] { "Chinese Strokes", "zhStrokes" },
+        new string[] { "Color Numbers", "colorNumbers" },
+        new string[] { "Needlessly Complicated Button", "needlesslyComplicatedButton" },
+        new string[] { "Chalices", "Chalices" },
+        new string[] { "Pixel Art", "PixelArt" },
+        new string[] { "Reversed Edgework", "ReversedEdgework" },
+        new string[] { "Faulty Accelerando", "faultyAccelerandoModule" },
+        new string[] { "Broken Binary", "BrokenBinary" },
+        new string[] { "Connected Monitors", "ConnectedMonitorsModule" },
+        new string[] { "Cruel Binary", "CruelBinary" },
+        new string[] { "Faulty Binary", "FaultyBinary" },
+        new string[] { "Increasing Indices", "increasingIndices" },
+        new string[] { "Pitch Perfect", "pitchPerfect" },
+        new string[] { "Color-Cycle Button", "colorCycleButton" },
+        new string[] { "D-CRYPT", "xelDcrypt" },
+        new string[] { "ReGret-B Filtering", "regretbFiltering" },
+        new string[] { "Tell Me When", "GSTellMeWhen" },
+        new string[] { "Totally Accurate Minecraft Simulator", "tams" },
+        new string[] { "Alien Filing Colors", "AlienModule" },
+        new string[] { "Entry Number Four", "GSEntryNumberFour" },
+        new string[] { "The Kanye Encounter", "TheKanyeEncounter" },
+        new string[] { "D-CIPHER", "xelDcipher" },
+        new string[] { "Color One Two", "colorOneTwo" },
+        new string[] { "Brown Bricks", "xelBrownBricks" },
+        new string[] { "Burnout", "kataBurnout" },
+        new string[] { "Spelling Buzzed", "SpellingBuzzed" },
+        new string[] { "Toolmods", "toolmods" },
+        new string[] { "Chinese Zodiac", "xelChineseZodiac" },
+        new string[] { "Mystic Maze", "mysticmaze" },
+        new string[] { "Duck, Duck, Goose", "DUCKDUCKGOOSE" },
+        new string[] { "Four Lights", "fourLights" },
+        new string[] { "One Links To All", "oneLinksToAllModule" },
+        new string[] { "Toolneedy", "toolneedy" },
+        new string[] { "Working Title", "workingTitle" },
+        new string[] { "Rules", "Rules" },
+        new string[] { "Tenpins", "tenpins" },
+        new string[] { "Double Listening", "doubleListening" },
+        new string[] { "Unfair's Revenge", "unfairsRevenge" },
+        new string[] { "Unfair's Cruel Revenge", "unfairsRevengeCruel" },
+        new string[] { "Wack Game of Life", "wackGameOfLife" },
+        new string[] { "Golf", "golf" },
+        new string[] { "Mindlock", "mindlock" },
+        new string[] { "Literally Nothing", "literallyNothing" },
+        new string[] { "Regular Hexpressions", "RegularHexpressions" },
+        new string[] { "Censorship", "Censorship" },
+        new string[] { "Colored Buttons", "ColoredButtons" },
+        new string[] { "Mechanus Cipher", "mechanusCipher" },
+        new string[] { "The Pentabutton", "GSPentabutton" },
+        new string[] { "Breaktime", "breaktime" },
+        new string[] { "Digisibility", "digisibility" },
+        new string[] { "Kim's Game", "KimsGame" },
+        new string[] { "Mazery", "Mazery" },
+        new string[] { "Space Invaders Extreme", "GSSpaceInvadersExtreme" },
+        new string[] { "Popufur", "popufur" },
+        new string[] { "Three Cryptic Steps", "ThreeCrypticSteps" },
+        new string[] { "Space", "xelSpace" },
+        new string[] { "Tech Support", "TechSupport" },
+        new string[] { "Metamem", "metamem" },
+        new string[] { "M&Ms", "MandMs" },
+        new string[] { "The Console", "console" },
+        new string[] { "Pocket Planes", "pocketPlanesModule" },
+        new string[] { "Bridge", "bridge" },
+        new string[] { "Beans", "beans" },
+        new string[] { "Beanboozled Again", "beanboozledAgain" },
+        new string[] { "Cool Beans", "coolBeans" },
+        new string[] { "Jellybeans", "jellybeans" },
+        new string[] { "Long Beans", "longBeans" },
+        new string[] { "Rotten Beans", "rottenBeans" },
+        new string[] { "Broken Karaoke", "xelBrokenKaraoke" },
+        new string[] { "Butterflies", "xelButterflies" },
+        new string[] { "The Dials", "TheDials" },
+        new string[] { "Chamber No. 5", "ChamberNoFive" },
+        new string[] { "Silenced Simon", "SilencedSimon" },
+        new string[] { "Teal Arrows", "tealArrowsModule" },
+        new string[] { "Frankenstein's Indicator", "frankensteinsIndicator" },
+        new string[] { "Keep Clicking", "keepClicking" },
+        new string[] { "Alphabet Tiles", "AlphabetTiles" },
+        new string[] { "Sea Bear Attacks", "seaBearAttacksModule" },
+        new string[] { "Devilish Eggs", "devilishEggs" },
+        new string[] { "Double Pitch", "DoublePitch" },
+        new string[] { "Literally Crying", "literallyCrying" },
+        new string[] { "h", "Averageh" },
+        new string[] { "Rune Match I", "runeMatchI" },
+        new string[] { "Rune Match II", "runeMatchII" },
+        new string[] { "Rune Match III", "runeMatchIII" },
+        new string[] { "Ars Goetia Identification", "arsGoetiaIdentification" },
+        new string[] { "Iñupiaq Numerals", "inupiaqNumerals" },
+        new string[] { "Quick Time Events", "xelQuickTimeEvents" },
+        new string[] { "The Bioscanner", "TheBioscanner" },
+        new string[] { "Pixel Number Base", "PixelNumberBase" },
+        new string[] { "Gradually Watermelon", "graduallyWatermelon" },
+        new string[] { "Silo Authorization", "siloAuthorization" },
+        new string[] { "Digital Grid", "digitalGrid" },
+        new string[] { "Even Or Odd", "evenOrOdd" },
+        new string[] { "Higher Or Lower", "HigherOrLower" },
+        new string[] { "Logical Operators", "logicalOperators" },
+        new string[] { "Mastermind Restricted", "mastermindRestricted" },
+        new string[] { "Reformed Role Reversal", "ReformedRoleReversal" },
+        new string[] { "Whiteout", "whiteout" },
+        new string[] { "Cell Lab", "cellLab" },
+        new string[] { "Gettin' Funky", "gettinFunkyModule" },
+        new string[] { "N&Ns", "NandNs" },
+        new string[] { "Color Hexagons", "colorHexagons" },
+        new string[] { "Lights On", "lightson" },
+        new string[] { "Commuting", "commuting" },
+        new string[] { "Look and Say", "LookAndSay" },
+        new string[] { "Symmetries Of A Square", "xelSymmetriesOfASquare" },
+        new string[] { "Currents", "Currents" },
+        new string[] { "Partitions", "partitions" },
+        new string[] { "Cruel Stars", "cruelStars" },
+        new string[] { "Telepathy", "Telepathy" },
+        new string[] { "Button Messer", "qkButtonMesser" },
+        new string[] { "Forget Any Color", "ForgetAnyColor" },
+        new string[] { "Nomai", "nomai" },
+        new string[] { "Taco Tuesday", "tacoTuesday" },
+        new string[] { "Melodic Message", "melodicMessage" },
+        new string[] { "Table Madness", "TableMadness" },
+        new string[] { "Colour Catch", "colourCatch" },
+        new string[] { "Sugar Skulls", "sugarSkulls" },
+        new string[] { "Cosmic", "CosmicModule" },
+        new string[] { "Mislocation", "mislocation" },
+        new string[] { "Semabols", "xelSemabols" },
+        new string[] { "Musher the Batten", "musherTheBatten" },
+        new string[] { "Simon Smiles", "SimonSmiles" },
+        new string[] { "Tribal Council", "TribalCouncil" },
+        new string[] { "Outrageous", "outrageous" },
+        new string[] { "Faulty Chinese Counting", "faultyChineseCounting" },
+        new string[] { "Press The Shape", "pressTheShape" },
+        new string[] { "Baybayin Words", "BaybayinWords" },
+        new string[] { "OmegaDestroyer", "omegaDestroyer" },
+        new string[] { "Atbash Cipher", "AtbashCipher" },
+        new string[] { "Going Backwards", "GoingBackwards" },
+        new string[] { "Blue Hexabuttons", "blueHexabuttons" },
+        new string[] { "Green Hexabuttons", "greenHexabuttons" },
+        new string[] { "Numbered Buttons", "numberedButtonsModule" },
+        new string[] { "Orange Hexabuttons", "orangeHexabuttons" },
+        new string[] { "Purple Hexabuttons", "purpleHexabuttons" },
+        new string[] { "Red Hexabuttons", "redHexabuttons" },
+        new string[] { "Venn Diagrams", "vennDiagram" },
+        new string[] { "White Hexabuttons", "whiteHexabuttons" },
+        new string[] { "Yellow Hexabuttons", "yellowHexabuttons" },
+        new string[] { "Video Poker", "videoPoker" },
+        new string[] { "Bottom Gear", "GSBottomGear" },
+        new string[] { "Johnson Solids", "xelJohnsonSolids" },
+        new string[] { "White Arrows", "WhiteArrows" },
+        new string[] { "Keypad Directionality", "KeypadDirectionality" },
+        new string[] { "Two Persuasive Buttons", "TwoPersuasiveButtons" },
+        new string[] { "Letter Layers", "xelLetterLayers" },
+        new string[] { "Towers", "Towers" },
+        new string[] { "The Exploding Pen", "TheExplodingPen" },
+        new string[] { "ReGrettaBle Relay", "regrettablerelay" },
+        new string[] { "Snack Attack", "SnackAttack" },
+        new string[] { "Security Council", "SecurityCouncil" },
+        new string[] { "Jackbox.TV", "jackboxServerModule" },
+        new string[] { "Musical Transposition", "MusicalTransposition" },
+        new string[] { "Standard Button Masher", "standardButtonMasher" },
+        new string[] { "The Furloid Jukebox", "xelFurloidJukebox" },
+        new string[] { "The Close Button", "TheCloseButton" },
+        new string[] { "Addition", "Addition" },
+        new string[] { "B-Machine", "xelBMachine" },
+        new string[] { "Saimoe Pad", "SaimoePad" },
+        new string[] { "Updog", "Updog" },
+        new string[] { "Quaver", "Quaver" },
+        new string[] { "What's on Second", "WhatsOnSecond" },
+        new string[] { "Another Keypad Module", "xelAnotherKeypadModule" },
+        new string[] { "Think Fast", "GSThinkFast" },
+        new string[] { "Rhythm Test", "rhythmTest" },
+        new string[] { "Shoddy Chess", "ShoddyChessModule" },
+        new string[] { "Bad Wording", "BadWording" },
+        new string[] { "Floor Lights", "FloorLights" },
+        new string[] { "Validation", "ValidationNeedy" },
+        new string[] { "Etch-A-Sketch", "etchASketch" },
+        new string[] { "Diophantine Equations", "DiophantineEquations" },
+        new string[] { "Zener Cards", "kataZenerCards" },
+        new string[] { "Rullo", "rullo" },
+        new string[] { "Striped Keys", "kataStripedKeys" },
+        new string[] { "Ternary Tiles", "GSTernaryTiles" },
+        new string[] { "Black Arrows", "blackArrowsModule" },
+        new string[] { "Coloured Arrows", "colouredArrowsModule" },
+        new string[] { "Cruello", "cruello" },
+        new string[] { "Flashing Arrows", "flashingArrowsModule" },
+        new string[] { "Double Screen", "doubleScreenModule" },
+        new string[] { "Forget Maze Not", "forgetMazeNot" },
+        new string[] { "Tetris Sprint", "tetrisSprint" },
+        new string[] { "eeB gnillepS", "eeBgnilleps" },
+        new string[] { "The Sequencyclopedia", "TheSequencyclopedia" },
+        new string[] { "Number Checker", "NumberChecker" },
+        new string[] { "Pandemonium Cipher", "pandemoniumCipher" },
+        new string[] { "Mineswapper", "mineswapper" },
+        new string[] { "Phosphorescence", "Phosphorescence" },
+        new string[] { "The Klaxon", "klaxon" },
+        new string[] { "Valued Keys", "valuedKeysModule" },
+        new string[] { "Numerical Knight Movement", "NumericalKnightMovement" },
+        new string[] { "Bandboozled Again", "bandboozledAgain" },
+        new string[] { "Ramboozled Again", "ramboozledAgain" },
+        new string[] { "SpriteClub Betting Simulation", "SpriteClubBettingSimulation" },
+        new string[] { "Hole in One", "HoleInOne" },
+        new string[] { "Simon Subdivides", "simonSubdivides" },
+        new string[] { "Audio Keypad", "AudioKeypad" },
+        new string[] { "Back Buttons", "backButtonsModule" },
+        new string[] { "Collapse", "collapseBasic" },
+        new string[] { "Hexiom", "hexiomModule" },
+        new string[] { "Bean Sprouts", "beanSprouts" },
+        new string[] { "Big Bean", "bigBean" },
+        new string[] { "Chilli Beans", "chilliBeans" },
+        new string[] { "Fake Beans", "fakeBeans" },
+        new string[] { "Kidney Beans", "kidneyBeans" },
+        new string[] { "Saimoe Maze", "SaimoeMaze" },
+        new string[] { "Bowling", "Bowling" },
+        new string[] { "Quiplash", "QLModule" },
+        new string[] { "Tell Me Why", "GSTellMeWhy" },
+        new string[] { "DNA Mutation", "DNAMutation" },
+        new string[] { "Entry Number One", "GSEntryNumberOne" },
+        new string[] { "Linq", "Linq" },
+        new string[] { "Sporadic Segments", "xelSporadicSegments" },
+        new string[] { "Boob Tube", "boobTubeModule" },
+        new string[] { "RGB Hypermaze", "rgbhypermaze" },
+        new string[] { "AAAAA", "AAAAA" },
+        new string[] { "Regular Sudoku", "RegularSudoku" },
+        new string[] { "Drive-In Window", "DIWindow" },
+        new string[] { "Polyrhythms", "polyrhythms" },
+        new string[] { "The 12 Days of Christmas", "GSTwelveDaysOfChristmas" },
+        new string[] { "X", "xModule" },
+        new string[] { "Y", "yModule" },
+        new string[] { "Rebooting M-OS", "RebootingM-Os" },
+        new string[] { "The Xenocryst", "GSXenocryst" },
+        new string[] { "Complexity", "complexity" },
+        new string[] { "Stacked Sequences", "stackedSequences" },
+        new string[] { "Small Circle", "smallCircle" },
+        new string[] { "Fractal Maze", "fractalMaze" },
+        new string[] { "Simon Stumbles", "simonStumbles" },
+        new string[] { "Wild Side", "WildSide" },
+        new string[] { "The Octadecayotton", "TheOctadecayotton" },
+        new string[] { "Colored Letters", "ColoredLetters" },
+        new string[] { "Bomb Corp. Filing", "BCFilingNeedy" },
+        new string[] { "Forget's Ultimate Showdown", "ForgetsUltimateShowdownModule" },
+        new string[] { "Kahoot!", "Kahoot" },
+        new string[] { "Mii Identification", "miiIdentification" },
+        new string[] { "Ultra Digital Root", "ultraDigitalRootModule" },
+        new string[] { "Simon Swindles", "simonSwindles" },
+        new string[] { "Next In Line", "NextInLine" },
+        new string[] { "Functional Mapping", "functionalMapping" },
+        new string[] { "Keypad Maze", "KeypadMaze" },
+        new string[] { "Stable Time Signatures", "StableTimeSignatures" },
+        new string[] { "Astrological", "Astrological" },
+        new string[] { "Corridors", "GSCorridors" },
+        new string[] { "XmORse Code", "xmorse" },
+        new string[] { "Decay", "decay" },
+        new string[] { "Free Password", "FreePassword" },
+        new string[] { "Large Free Password", "LargeFreePassword" },
+        new string[] { "Large Password", "LargeVanillaPassword" },
+        new string[] { "The Burnt", "burnt" },
+        new string[] { "Access Codes", "GSAccessCodes" },
+        new string[] { "Cistercian Numbers", "xelCistercianNumbers" },
+        new string[] { "Brown Cipher", "brownCipher" },
+        new string[] { "Code Cracker", "CodeCracker" },
+        new string[] { "Indentation", "Indentation" },
+        new string[] { "One-Line", "oneLine" },
+        new string[] { "Double Knob", "GSDoubleKnob" },
+        new string[] { "Interpunct", "interpunct" },
+        new string[] { "The Speaker", "theSpeaker" },
+        new string[] { "Name Codes", "nameCodes" },
+        new string[] { "The 1, 2, 3 Game", "TheOneTwoThreeGame" },
+        new string[] { "Hold On", "ashHoldOn" },
+        new string[] { "Keypad Magnified", "keypadMagnified" },
+        new string[] { "Papa's Pizzeria", "papasPizzeria" },
+        new string[] { "Diffusion", "diffusion" },
+        new string[] { "Coffee Beans", "coffeeBeans" },
+        new string[] { "Soy Beans", "soyBeans" },
+        new string[] { "The Shaker", "shaker" },
+        new string[] { "Ghost Movement", "ghostMovement" },
+        new string[] { "Letter Grid", "LetterGrid" },
+        new string[] { "Newline", "newline" },
+        new string[] { "Amusement Parks", "amusementParks" },
+        new string[] { "RSA Cipher", "RSACipher" },
+        new string[] { "Screensaver", "NeedyScreensaver" },
+        new string[] { "Transmission Transposition", "transmissionTransposition" },
+        new string[] { "Icon Reveal", "IconReveal" },
+        new string[] { "Literally Something", "literallySomething" },
+        new string[] { "hexOrbits", "hexOrbits" },
+        new string[] { "Solitaire Cipher", "solitaireCipher" },
+        new string[] { "Matchmaker", "matchmaker" },
+        new string[] { "Hearthur", "hearthur" },
+        new string[] { "Ladders", "ladders" },
+        new string[] { "Color Punch", "ColorPunch" },
+        new string[] { "Decimation", "decimation" },
+        new string[] { "Count to 69420", "countToSixtynineThousandFourHundredAndTwenty" },
+        new string[] { "Mssngv Wls", "MssngvWls" },
+        new string[] { "Coinage", "Coinage" },
+        new string[] { "Emoticon Math", "emoticonMathModule" },
+        new string[] { "Naming Conventions", "NamingConventions" },
+        new string[] { "Netherite", "Netherite" },
+        new string[] { "Identifrac", "identifrac" },
+        new string[] { "Simon Supports", "simonSupports" },
+        new string[] { "Cruel Colour Flash", "cruelColourFlash" },
+        new string[] { "Factoring Maze", "factoringMaze" },
+        new string[] { "Numpath", "numpath" },
+        new string[] { "The Logan Parody Jukebox", "LoganJukebox" },
+        new string[] { "Binary Buttons", "BinaryButtons" },
+        new string[] { "The Alteran Trail", "alteranTrail" },
+        new string[] { "The Assorted Arrangement", "TheAssortedArrangement" },
+        new string[] { "Needy Wires", "TDSNeedyWires" },
+        new string[] { "Pathfinder", "GSPathfinder" },
+        new string[] { "Turn Four", "turnFour" },
+        new string[] { "Llama, Llama, Alpaca", "llamaLlamaAlpaca" },
+        new string[] { "nya~", "TDSNya" },
+        new string[] { "Cruel Synesthesia", "cruelSynesthesia" },
+        new string[] { "Voltorb Flip", "VoltorbFlip" },
+        new string[] { "Dossier Modifier", "TDSDossierModifier" },
+        new string[] { "Polygrid", "polygrid" },
+        new string[] { "amogus", "TDSAmogus" },
+        new string[] { "Mischmodul", "mischmodul" },
+        new string[] { "Connect Four", "connectFourModule" },
+        new string[] { "Directing Buttons", "GSDirectingButtons" },
+        new string[] { "Macro Memory", "macroMemory" },
+        new string[] { "Anomia", "anomia" },
+        new string[] { "Colors Maximization", "colors_maximization" },
+        new string[] { "Antimatter Dimensions", "antimatterDimensions" },
+        new string[] { "Blue Whale", "blueWhale" },
+        new string[] { "Bottom Gear 2", "GSBottomGear2" },
+        new string[] { "Doomsday Button", "doomsdayButton" },
+        new string[] { "The Impostor", "impostor" },
+        new string[] { "Uncoloured Buttons", "GSUncolouredButtons" },
+        new string[] { "Watching Paint Dry", "watchingPaintDry" },
+        new string[] { "Dice Cipher", "diceCipher" },
+        new string[] { "Soulscream", "soulscream" },
+        new string[] { "Weekdays", "weekDays" },
+        new string[] { "Face Recognition", "xelFaceRecognition" },
+        new string[] { "Infinite Loop", "InfiniteLoop" },
+        new string[] { "Mazeswapper", "mazeswapper" },
+        new string[] { "Salts", "salts" },
+        new string[] { "Alfa-Bravo", "alfa_bravo" },
+        new string[] { "Hitman", "HitmanModule" },
+        new string[] { "Stoichiometry", "stoichiometryModule" },
+        new string[] { "Classical Order", "classicalOrder" },
+        new string[] { "Dialtones", "xelDialtones" },
+        new string[] { "Needy Hotate", "needyHotate" },
+        new string[] { "Space Traders", "space_traders" },
+        new string[] { "Cartinese", "cartinese" },
+        new string[] { "Cube Synchronization", "qkCubeSynchronization" },
+        new string[] { "Eight", "eight" },
+        new string[] { "Fursona", "fursona" },
+        new string[] { "Notre-Dame Cipher", "notreDameCipher" },
+        new string[] { "Kawaiitlyn", "kawaiitlyn" },
+        new string[] { "Stupid Slots", "stupidSlots" },
+        new string[] { "Red Herring", "RedHerring" },
+        new string[] { "Sysadmin", "sysadmin" },
+        new string[] { "Binary Shift", "binary_shift" },
+        new string[] { "Rain Hell", "rainHellModule" },
+        new string[] { "Rain", "rainModule" },
+        new string[] { "Meteor", "meteor" },
+        new string[] { "Parliament", "parliament" },
+        new string[] { "Squeeze", "squeeze" },
+        new string[] { "Logging", "Logging" },
+        new string[] { "Maze Identification", "GSMazeIdentification" },
+        new string[] { "Pink Arrows", "pinkArrows" },
+        new string[] { "Anagraphy", "anagraphy" },
+        new string[] { "Pawns", "pawns" },
+        new string[] { "SUSadmin", "susadmin" },
+        new string[] { "Simply Simon", "simplysimon" },
+        new string[] { "Black Hexabuttons", "blackHexabuttons" },
+        new string[] { "Encrypted Maze", "encryptedMaze" },
+        new string[] { "Dimension King", "DimensionKingModule" },
+        new string[] { "Fire Diamonds", "fireDiamondsModule" },
+        new string[] { "Puzzle Identification", "GSPuzzleIdentification" },
+        new string[] { "Face Perception", "face_perception" },
+        new string[] { "IKEA Plushies", "ikeaPlushies" },
+        new string[] { "Simon Shapes", "SimonShapesModule" },
+        new string[] { "Breakfast Egg", "breakfastEgg" },
+        new string[] { "Literally Dying", "literallyDying" },
+        new string[] { "Literally Malding", "literallyMalding" },
+        new string[] { "Cacti's Conundrum", "CactusPConundrum" },
+        new string[] { "Simon Shouts", "SimonShoutsModule" },
+        new string[] { "Marquee Morse", "marqueeMorseModule" },
+        new string[] { "Line Equations", "GSLineEquations" },
+        new string[] { "Starmap Reconstruction", "starmap_reconstruction" },
+        new string[] { "White Hole", "WhiteHoleModule" },
+        new string[] { "Pointless Machines", "PointlessMachines" },
+        new string[] { "Maritime Semaphore", "MaritimeSemaphoreModule" },
+        new string[] { "Stability", "stabilityModule" },
+        new string[] { "Coprime Checker", "coprimeChecker" },
+        new string[] { "Labeled Priorities Plus", "labeledPrioritiesPlus" },
+        new string[] { "Mastermind Restricted Cruel", "mastermindRestrictedCruel" },
+        new string[] { "Warning Signs", "warningSigns" },
+        new string[] { "Walking Cube", "WalkingCubeModule" },
+        new string[] { "Customer Identification", "xelCustomerIdentification" },
+        new string[] { "Out of Time", "OutOfTime" },
+        new string[] { "Custom Keys", "RemoteTurnTheKeys" },
+        new string[] { "Mind Meld", "mindMeld" },
+        new string[] { "Mirror", "mirror" },
+        new string[] { "Phones", "phones" },
+        new string[] { "Scratch-Off", "scratchOff" },
+        new string[] { "Skewers", "Skewers" },
+        new string[] { "The Arena", "TheArena" },
+        new string[] { "Words", "Words" },
+        new string[] { "Insa Ilo", "insaIlo" },
+        new string[] { "Placement Roulette", "PlacementRouletteModule" },
+        new string[] { "Art Pricing", "artPricing" },
+        new string[] { "Brown Hexabuttons", "brownHexabuttons" },
+        new string[] { "Gray Hexabuttons", "grayHexabuttons" },
+        new string[] { "Perceptron", "perceptron" },
+        new string[] { "Coverage", "needy_coverage" },
+        new string[] { "RGB Combination", "rgbCombination" },
+        new string[] { "Wire Association", "WireAssociationModule" },
+        new string[] { "The Icon Kit", "theIconKitModule" },
+        new string[] { "The Garnet Thief", "theGarnetThief" },
+        new string[] { "Flyswatting", "flyswatting" },
+        new string[] { "Ten Aliens", "ten_aliens" },
+        new string[] { "Tetrahedron", "tetrahedron" },
+        new string[] { "Nonbinary Puzzle", "nonbinaryPuzzle" },
+        new string[] { "Simon Said", "simonSaidModule" },
+        new string[] { "M-Seq", "mSeq" },
+        new string[] { "SQL - Basic", "sqlBasic" },
+        new string[] { "MWISort", "mwisort" },
+        new string[] { "Touch Transmission", "touchTransmission" },
+        new string[] { "TV", "TV" },
+        new string[] { "Coordination", "Coordination" },
+        new string[] { "Kusa Nihonglish", "kusaNihonglish" },
+        new string[] { "SQL - Evil", "sqlEvil" },
+        new string[] { "LEDs", "leds" },
+        new string[] { "SQL - Cruel", "sqlCruel" },
+        new string[] { "Quizbowl", "quizbowl" },
+        new string[] { "Superparsing", "superparsing" },
+        new string[] { "Clipping Triangles", "clippingTriangles" },
+        new string[] { "Dripping Triangles", "drippingTriangles" },
+        new string[] { "Flipping Triangles", "flippingTriangles" },
+        new string[] { "Skipping Triangles", "skippingTriangles" },
+        new string[] { "Slipping Triangles", "slippingTriangles" },
+        new string[] { "Tipping Triangles", "tippingTriangles" },
+        new string[] { "Tripping Triangles", "trippingTriangles" },
+        new string[] { "Discolour Flash", "discolourFlash" },
+        new string[] { "Go", "goModule" },
+        new string[] { "Simpleton't", "notsimple" },
+        new string[] { "Uncolour Flash", "uncolourFlash" },
+        new string[] { "Boozlesnap", "boozlesnap" },
+        new string[] { "Shogi Identification", "shogiIdentification" },
+        new string[] { "The Tile Maze", "theTileMazeModule" },
+        new string[] { "hexNull", "hexNull" },
+        new string[] { "Shashki", "shashki" },
+        new string[] { "Horsey", "qkHorsey" },
+        new string[] { "Logic Chess", "logicChess" },
+        new string[] { "Shut-the-Box", "ShutTheBox" },
+        new string[] { "The Hypercolor", "hypercolor" },
+        new string[] { "Candy Land", "candyLand" },
+        new string[] { "Congkak", "congkakMQEktane1" },
+        new string[] { "Cruel Candy Land", "cruelCandyLand" },
+        new string[] { "Label Priorities", "LabelPrioritiesModule" },
+        new string[] { "Purchasing Properties", "PurchasingProperties" },
+        new string[] { "Robit Programming", "robitProgramming" },
+        new string[] { "Simon", "simonSemiboss" },
+        new string[] { "Sorry Sliders", "SorrySliders" },
+        new string[] { "Termite", "termite" },
+        new string[] { "The Board Walk", "BoardWalk" },
+        new string[] { "Aquarium", "AquariumModule" },
+        new string[] { "CA-RPS", "caRPS" },
+        new string[] { "Melody Memory", "melodyMemory" },
+        new string[] { "Eight Tiles Panic", "eightTilesPanic" },
+        new string[] { "Inselectables", "inselectables" },
+        new string[] { "Spongebob Birthday Identification", "spongebobBirthdayIdentification" },
+        new string[] { "Binary Tango", "binaryTango" },
+        new string[] { "Who's on Morse", "whosOnMorseModule" },
+        new string[] { "Antistress", "antistress" },
+        new string[] { "Matching Morse", "matchingMorse" },
+        new string[] { "Variety", "VarietyModule" },
+        new string[] { "Exploding Mittens", "explodingMittens" },
+        new string[] { "Cursor Maze", "cursorMazeModule" },
+        new string[] { "Gemory", "gemory" },
+        new string[] { "Wendithap'n", "Wendithapn" },
+        new string[] { "Royal Piano Keys", "royalPianoKeys" },
+        new string[] { "Spinning Mazes", "spinningMazes" },
+        new string[] { "Birthday Cake", "birthdayCake" },
+        new string[] { "Prankster", "prankster" },
+        new string[] { "Scrabble Scramble", "scrabbleScramble" },
+        new string[] { "Base-1", "base1" },
+        new string[] { "Derivatives", "derivatives" },
+        new string[] { "Gray Arrows", "grayArrowsModule" },
+        new string[] { "Consonants", "needy_consonants" },
+        new string[] { "Vector Addition", "needy_vector_addition" },
+        new string[] { "Critters", "CrittersModule" },
+        new string[] { "Mazeseeker", "GSMazeseeker" },
+        new string[] { "Amazing Hexabuttons", "amazingHexabuttons" },
+        new string[] { "Colorful Hexabuttons", "colorfulHexabuttons" },
+        new string[] { "Lettered Hexabuttons", "letteredHexabuttons" },
+        new string[] { "Logical Hexabuttons", "logicalHexabuttons" },
+        new string[] { "Magical Hexabuttons", "magicalHexabuttons" },
+        new string[] { "Musical Hexabuttons", "musicalHexabuttons" },
+        new string[] { "Puzzling Hexabuttons", "puzzlingHexabuttons" },
+        new string[] { "Simple Hexabuttons", "simpleHexabuttons" },
+        new string[] { "Simon's Satire", "SimonsSatire" },
+        new string[] { "Symbolic Hexabuttons", "symbolicHexabuttons" },
+        new string[] { "Transmitting Hexabuttons", "transmittingHexabuttons" },
+        new string[] { "Voronoi Maze", "VoronoiMazeModule" },
+        new string[] { "Duck Konundrum", "duckKonundrum" },
+        new string[] { "IKEA Documents", "IKEADocuments" },
+        new string[] { "Game of Colors", "GameOfColors" },
+        new string[] { "Concentration", "ConcentrationModule" },
+        new string[] { "Blaseball", "krazzBlaseball" },
+        new string[] { "Metapuzzle", "metapuzzle" }
+    );
 }
